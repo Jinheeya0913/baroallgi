@@ -66,8 +66,11 @@ class AuthNotifier extends StateNotifier<AuthModel?> {
     }
   }
 
-  void logout() {
+  AuthModel? logout(AuthModel auth) {
     state = null;
     _storage.delete(key: 'useAutoLogin');
+    
+    print('rlog :: 로그아웃 성공');
+    return state;
   }
 }
