@@ -1,5 +1,6 @@
 import 'package:baroallgi/core/provider/auth_status_provider.dart';
 import 'package:baroallgi/features/auth/presentation/login_page.dart';
+import 'package:baroallgi/features/main/home_page.dart';
 import 'package:baroallgi/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

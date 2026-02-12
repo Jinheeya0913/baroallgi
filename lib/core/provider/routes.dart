@@ -10,9 +10,11 @@ List<GoRoute> _routes = [
     path: '/login',
     name: 'login',
     builder: (context, state) => const LoginPage(),
-    routes: [
-      // 하위 경로들...
-    ],
+  ),
+  GoRoute(
+    path: '/main',
+    name: 'main',
+    builder: (context, state) => const HomePage(),
   ),
   //
 ];

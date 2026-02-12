@@ -32,13 +32,19 @@ class AuthStatusProvider extends ChangeNotifier {
     final isSplash = state.fullPath == '/splash';
     final isLogin = state.fullPath == '/login';
 
-    if (auth == null) {
-      print('rlog :: auth 정보 없음');
-      return '/login';
+    if (auth == null && isSplash) {
+      return null;
     }
 
-    // 로그인 된 상태에서 로그인/스플래시 페이지에 있다면 홈으로 이동
-    if (isLogin || isSplash) return '/';
+    if(auth== null) {
+      print('rlog :: auth 정보 없음');
+      return (isLogin) ? null : '/login';
+    }else {
+      print('rlog :: ${auth.userModel!.email}');
+      if(isLogin || isSplash) {
+        return '/main';
+      }
+    }
 
     return null;
   }
