@@ -1,5 +1,6 @@
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
+import 'package:baroallgi/core/ui/widgets/AppLogoImg.dart';
 import 'package:baroallgi/core/ui/widgets/BaseSnackBar.dart';
 import 'package:baroallgi/features/auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -206,7 +207,7 @@ class LoginPage extends HookConsumerWidget {
   }
 
   Widget _title() {
-    return SvgPicture.asset('assets/images/logo_allbaro.svg', width: 200);
+    return AppLogoImg(width: 200,);
   }
 
   void _login({
