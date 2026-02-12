@@ -1,4 +1,6 @@
 import 'package:baroallgi/core/ui/theme/theme_color.dart';
+import 'package:baroallgi/features/auth/models/auth_model.dart';
+import 'package:baroallgi/features/auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -8,6 +10,9 @@ class BaseDrawer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    final auth = ref.read(authNotifierProvider);
+
     return Drawer(
       width: MediaQuery.of(context).size.width / 2,
       child: ListView(
@@ -43,15 +48,21 @@ class BaseDrawer extends HookConsumerWidget {
             title: const Text('메시지'),
             onTap: () {},
           ),
+          if(auth!=null)
           ListTile(
             leading: const Icon(Icons.logout),
             title: Text('로그아웃'),
-            onTap: () {
-              // final result = state.logout();
+            onTap: () async {
+              _logout(ref, auth);
             },
           ),
         ],
       ),
     );
+  }
+
+  // Todo 보완할 것
+  _logout(WidgetRef ref, AuthModel auth) async{
+    ref.read(authNotifierProvider.notifier).logout(auth);
   }
 }
