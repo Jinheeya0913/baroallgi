@@ -1,0 +1,4 @@
+
+
+const AUTH_STATUS_LOGIN = 'LOGIN';
+const AUTH_STATUS_LOGOUT = 'LOGOUT';
