@@ -19,7 +19,9 @@ class HomePage extends HookConsumerWidget {
       "📺 SNS 파격 세일 광고, 결제 전 사기 사이트인지 확인하세요",
     ];
     return DefaultLayout(
-      useAppBar: false,
+      title: _title(),
+      useAppBar: true,
+      useDrawer: true,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -48,6 +50,8 @@ class HomePage extends HookConsumerWidget {
               ),
             ),
             _buildHotPickSlider(),
+            _buildReportCard(context),
+            SizedBox(height: 10,),
             _buildMenuCard(
               '💰 금융사기',
               '보이스피싱, 스미싱 수법 정리',
@@ -249,5 +253,85 @@ class HomePage extends HookConsumerWidget {
         },
       ),
     );
+  }
+
+  Widget _buildReportCard(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16.0),
+      decoration: BoxDecoration(
+        // 신뢰감을 주는 짙은 파란색 혹은 보라색 그라데이션
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4A00E0), Color(0xFF8E2DE2)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.purple.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            // 제보하기 페이지로 이동 로직
+            print("제보하기 클릭됨");
+      },
+        borderRadius: BorderRadius.circular(20.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 20.0),
+            child: Row(
+              children: [
+                // 반짝이는 효과를 주는 배경 위의 아이콘
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.campaign_rounded, color: Colors.white, size: 32),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "이거 진짜인가요?",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "의심되는 정보나 찌라시를 제보해 주세요.\n올바로가 팩트체크 해드립니다!",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _title() {
+
+    return AppLogoImg(isHorizontal: true, width: 150,);
   }
 }
