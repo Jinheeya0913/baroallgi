@@ -16,6 +16,11 @@ List<GoRoute> _routes = [
     name: 'main',
     builder: (context, state) => const HomePage(),
   ),
+  GoRoute(
+    path: '/report',
+    name: 'report',
+    builder: (context, state) => const ReportPage(),
+  ),
   //
 ];
 
