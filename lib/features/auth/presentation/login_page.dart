@@ -4,7 +4,6 @@ import 'package:baroallgi/core/ui/widgets/AppLogoImg.dart';
 import 'package:baroallgi/core/ui/widgets/BaseSnackBar.dart';
 import 'package:baroallgi/features/auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
@@ -56,7 +55,7 @@ class LoginPage extends HookConsumerWidget {
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
-              padding: EdgeInsets.only(bottom: CNST_SIZE_16),
+              padding: EdgeInsets.only(bottom: CNST_SIZE_NORMAL),
               child: Column(
                 children: [
                   Column(
@@ -98,7 +97,7 @@ class LoginPage extends HookConsumerWidget {
                         inputAction: TextInputAction.next,
                         hintText: '이메일을 입력하세요',
                         hintStyle: TextStyle(
-                          fontSize: CNST_SIZE_16,
+                          fontSize: CNST_SIZE_NORMAL,
                           color: Colors.black45,
                         ),
                       ),
@@ -116,7 +115,7 @@ class LoginPage extends HookConsumerWidget {
                         focusNode: passwordFocusNode,
                         hintText: '비밀번호를 입력하세요',
                         hintStyle: TextStyle(
-                          fontSize: CNST_SIZE_16,
+                          fontSize: CNST_SIZE_NORMAL,
                           color: Colors.black45,
                         ),
                         hideText: true,

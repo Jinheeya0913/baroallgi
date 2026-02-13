@@ -1,12 +1,7 @@
 import 'package:baroallgi/core/ui/widgets/BaseDrawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-// import 'package:goodedunote/common/component/user_drawer.dart';
-
-import 'package:baroallgi/core/ui/theme/theme_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 
 class DefaultLayout extends HookConsumerWidget {
@@ -50,7 +45,7 @@ class DefaultLayout extends HookConsumerWidget {
         onTap: () => FocusScope.of(context).unfocus(), // 바깥 터치 시 키보드 dismiss
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(CNST_SIZE_16),
+            padding: const EdgeInsets.all(CNST_SIZE_NORMAL),
             child: child,
           ),
         ),
