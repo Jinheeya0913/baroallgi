@@ -40,7 +40,6 @@ class BaseTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final GestureTapCallback? onTap;
 
-
   const BaseTextField({
     super.key,
     this.onChanged,
@@ -49,7 +48,7 @@ class BaseTextField extends StatelessWidget {
     this.validator,
     this.hideText = false,
     this.autoFocus = false,
-    this.circleBorder = CNST_SIZE_16,
+    this.circleBorder = CNST_SIZE_NORMAL,
     this.digitOnly = false,
     this.maxLength,
     this.contentPadding,
@@ -74,28 +73,21 @@ class BaseTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseBorder = OutlineInputBorder(
-        borderSide: BorderSide(
-          color: borderColor,
-          width: borderWidth,
-        ),
-        borderRadius: BorderRadius.all(Radius.circular(circleBorder))
+      borderSide: BorderSide(color: borderColor, width: borderWidth),
+      borderRadius: BorderRadius.all(Radius.circular(circleBorder)),
     );
 
     final unVisibleBorder = OutlineInputBorder(
-        borderSide: BorderSide(
-          color: borderColor,
-          width: borderWidth,
-        )
+      borderSide: BorderSide(color: borderColor, width: borderWidth),
     );
 
-
     return TextFormField(
-            controller: controller,
+      controller: controller,
       inputFormatters: [if (digitOnly) FilteringTextInputFormatter.digitsOnly],
       // 입력 양식
       maxLength: maxLength == null ? null : maxLength,
       // 입력길이 제한
-      maxLines: hideText == true ?  1 : maxLines,
+      maxLines: hideText == true ? 1 : maxLines,
       cursorColor: cursorColor,
       obscureText: hideText,
       obscuringCharacter: '*',
@@ -107,7 +99,7 @@ class BaseTextField extends StatelessWidget {
       // 포커스
       autofocus: autoFocus,
       // 자동 포커스
-      focusNode: focusNode == null ? null : focusNode,
+      focusNode: focusNode,
       // 수동 포커스
 
       // 꾸미기
@@ -117,29 +109,29 @@ class BaseTextField extends StatelessWidget {
         contentPadding: contentPadding != null
             ? EdgeInsets.all(contentPadding!)
             : const EdgeInsets.all(CNST_SIZE_20),
+
+        // hint
         hintText: hintText,
-        hintStyle: hintStyle ?? TextStyle(
-          color: THEME_COLOR_MAIN,
-          fontSize: CNST_SIZE_14,
-        ),
+        hintStyle:
+            hintStyle ??
+            TextStyle(color: THEME_COLOR_MAIN, fontSize: CNST_SIZE_14),
+        // error
         errorText: errorText,
+
         fillColor: THEME_COLOR_WHITE,
         filled: filled,
+
         // 배경생 유무
         border: useBorder ? baseBorder : null,
         enabledBorder: useBorder ? baseBorder : unVisibleBorder,
-        // 선택된 상태에서의 볼더
 
+        // 선택된 상태에서의 볼더
         focusedBorder: baseBorder.copyWith(
-          borderSide: baseBorder.borderSide.copyWith(
-            color: cursorColor,
-          ),
+          borderSide: baseBorder.borderSide.copyWith(color: cursorColor),
         ),
         labelText: labelText,
         labelStyle: labelTextStyle,
       ),
-
     );
   }
-
 }
