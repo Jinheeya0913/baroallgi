@@ -5,14 +5,13 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 
 final permissionProvider =
-    StateNotifierProvider<PermissionNotifier, AppPermissionState>((ref) {
-      return PermissionNotifier();
+    StateNotifierProvider<PermissionProvider, AppPermissionState>((ref) {
+      return PermissionProvider();
     });
 
-class PermissionNotifier extends StateNotifier<AppPermissionState> {
-  PermissionNotifier() : super(AppPermissionState()) {
-    // 앱 시작 시 현재 권한 상태 확인
-    refreshAllStatus();
+class PermissionProvider extends StateNotifier<AppPermissionState> {
+  PermissionProvider() : super(AppPermissionState()) {
+    initAllStatus();
   }
 
   // 사진 권한 요청
@@ -37,14 +36,14 @@ class PermissionNotifier extends StateNotifier<AppPermissionState> {
     // 상태 업데이트
     if (photosPs.isAuth) {
       state = state.copyWith(photo: photosPs);
-    } else {
-      print('rlog :: 사용자가 권한을 거부하였습니다.');
     }
   }
 
   // 카메라 권한 요청 (camera 패키지 사용 시)
   Future<void> requestCameraPermission() async {
+    print('rlog :: 카메라 권한 요청');
     final status = await ph.Permission.camera.request();
+
     PermissionState cameraPs;
 
     if (status.isGranted) {
@@ -60,20 +59,21 @@ class PermissionNotifier extends StateNotifier<AppPermissionState> {
   }
 
   // 모든 권한 상태 새로고침
-  Future<void> refreshAllStatus() async {
+  Future<void> initAllStatus() async {
     // 사진 권한 상태
     PermissionRequestOption requestOption = _getOption();
     final photoPs = await PhotoManager.getPermissionState(
       requestOption: requestOption,
     );
-
     // 카메라 권한 상태
     final cameraStatus = await ph.Permission.camera.status;
     final cameraPs = cameraStatus.isGranted
         ? PermissionState.authorized
         : PermissionState.denied;
 
-    print('rlog :: photoPs > ${photoPs.isAuth} || cameraPs > ${cameraPs.isAuth}');
+    print('rlog :: init 사진 권한 상태 :: ${photoPs.isAuth}');
+    print('rlog :: init 카메라 권한 상태 :: ${cameraPs.isAuth}');
+
 
     state = state.copyWith(photo: photoPs, camera: cameraPs);
   }
@@ -97,13 +97,13 @@ class PermissionNotifier extends StateNotifier<AppPermissionState> {
 class AppPermissionState {
   final PermissionState photo;
   final PermissionState camera;
-  final TargetPlatform? platform; // 플랫폼 정보 추가
+  final TargetPlatform platform; // 플랫폼 정보 추가
 
   AppPermissionState({
     this.photo = PermissionState.notDetermined,
     this.camera = PermissionState.notDetermined,
-    this.platform,
-  });
+    TargetPlatform? platform,
+  }) : platform = platform ?? defaultTargetPlatform;
 
   AppPermissionState copyWith({
     PermissionState? photo,
