@@ -1,3 +1,4 @@
+import 'package:baroallgi/core/provider/permission_provider.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -5,62 +6,60 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
-
 class ImagePickerPage extends HookConsumerWidget {
   static String get routeName => 'image_picker';
+
   const ImagePickerPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final permissionState = ref.watch(permissionProvider);
+    final permissionNotifier = ref.watch(permissionProvider.notifier);
 
     // 상태 관리: 불러온 자산(Asset) 리스트와 선택된 리스트
     final assets = useState<List<AssetEntity>>([]);
     final selectedAssets = useState<List<AssetEntity>>([]);
     final maxCount = 20;
 
-    // 초기 권한 요청 및 사진 로드
+    print('rlog :: photo state ${permissionState.photo.isAuth}');
+    
     useEffect(() {
-      Future<void> loadAssets() async {
-        // 1. 현재 라이브러리 버전의 권한 요청 메서드 사용
-        final PermissionState ps = await PhotoManager.requestPermissionExtend();
-
-        print("권한 상태: $ps");
-
-        // 2. 권한이 허용(authorized)되었거나 일부 허용(limited)된 경우
-        if (ps.isAuth || ps == PermissionState.limited) {
-
-          // 3. 앨범 목록 가져오기 (오직 이미지만)
+      if (permissionState.photo.isAuth) {
+        Future<void> loadAssets() async {
           final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList(
             type: RequestType.image,
-            // 중요: 필터 옵션을 추가하여 모든 이미지를 강제로 스캔하도록 유도
-            filterOption: FilterOptionGroup(
-              containsPathModified: true,
-            ),
+            filterOption: FilterOptionGroup(containsPathModified: true),
           );
 
-          if (paths.isNotEmpty) {
-            // 첫 번째 앨범(보통 'Recent' 또는 '모든 사진') 선택
-            final AssetPathEntity recentAlbum = paths.first;
-
-            // 4. 사진 데이터 가져오기 (최근순 80장)
-            final List<AssetEntity> recentAssets = await recentAlbum.getAssetListRange(
-              start: 0,
-              end: 80,
-            );
-
+          if(paths.isNotEmpty){
+            final recentAssets = await paths.first.getAssetListRange(start: 0, end: 80);
             assets.value = recentAssets;
-          } else {
-            print("사진이 포함된 앨범 경로를 찾지 못했습니다.");
           }
-        } else {
-          print("권한이 거절되었습니다.");
-          // 권한 거절 시 설정창으로 보낼 수 있습니다.
-          // PhotoManager.openSetting();
         }
+        loadAssets();
       }
-      loadAssets();
       return null;
-    }, []);
+    }, [permissionState.photo]);
+
+    // 권한이 없는 경우 (거부됨 또는 아직 결정 안 됨)
+    if (!permissionState.photo.isAuth) {
+      return DefaultLayout(
+        title: const Text("권한 필요"),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("사진을 선택하려면 권한이 필요합니다."),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => permissionNotifier.requestPhotoPermission(),
+                child: const Text("권한 요청하기"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return DefaultLayout(
       title: const Text("사진 선택", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -68,13 +67,13 @@ class ImagePickerPage extends HookConsumerWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: selectedAssets.value.isNotEmpty
           ? SizedBox(
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: FloatingActionButton.extended(
-          onPressed: () => Navigator.pop(context, selectedAssets.value),
-          label: Text("${selectedAssets.value.length}장 선택 완료"),
-          backgroundColor: Colors.white,
-        ),
-      )
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: FloatingActionButton.extended(
+                onPressed: () => Navigator.pop(context, selectedAssets.value),
+                label: Text("${selectedAssets.value.length}장 선택 완료"),
+                backgroundColor: Colors.white,
+              ),
+            )
           : null,
       // 우측 상단 완료 버튼
       child: GridView.builder(
@@ -98,7 +97,10 @@ class ImagePickerPage extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.camera_alt_outlined, color: Colors.grey),
-                    Text("사진 촬영", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(
+                      "사진 촬영",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                   ],
                 ),
               ),
@@ -112,8 +114,9 @@ class ImagePickerPage extends HookConsumerWidget {
           return GestureDetector(
             onTap: () {
               if (isSelected) {
-                selectedAssets.value =
-                    selectedAssets.value.where((e) => e != asset).toList();
+                selectedAssets.value = selectedAssets.value
+                    .where((e) => e != asset)
+                    .toList();
               } else {
                 if (selectedAssets.value.length < maxCount) {
                   selectedAssets.value = [...selectedAssets.value, asset];
@@ -155,12 +158,13 @@ class ImagePickerPage extends HookConsumerWidget {
                     alignment: Alignment.center,
                     child: isSelected
                         ? Text(
-                      "${selectIndex + 1}",
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold),
-                    )
+                            "${selectIndex + 1}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
                         : null,
                   ),
                 ),
@@ -170,5 +174,9 @@ class ImagePickerPage extends HookConsumerWidget {
         },
       ),
     );
+
+
   }
+
+
 }
