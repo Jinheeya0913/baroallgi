@@ -1,21 +1,23 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
+    localPropertiesFile.inputStream().use {
+        localProperties.load(it)
     }
 }
+
 android {
     namespace = "com.baroallgi.baroallgi"
     compileSdk = flutter.compileSdkVersion
@@ -27,27 +29,26 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        // 기존 toString() 에러 방지를 위해 문자열로 직접 지정
+        jvmTarget = "17"
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.baroallgi.baroallgi"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders = [
-            applicationName: localProperties.getProperty('applicationName') ?: ""
-        ]
+
+        // 중요: Kotlin DSL(.kts)에서는 아래와 같이 mapOf를 사용해야 합니다.
+        manifestPlaceholders += mapOf(
+            "applicationName" to (localProperties.getProperty("applicationName") ?: "")
+        )
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+        getByName("release") {
+            // release 빌드 시에도 일단 debug 키 사용 (필요 시 수정)
             signingConfig = signingConfigs.getByName("debug")
         }
     }
