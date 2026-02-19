@@ -21,23 +21,28 @@ class ImagePickerPage extends HookConsumerWidget {
     final selectedAssets = useState<List<AssetEntity>>([]);
     final maxCount = 20;
 
-    print('rlog :: photo state ${permissionState.photo.isAuth}');
-    
     useEffect(() {
       if (permissionState.photo.isAuth) {
+        print('rlog :: photo state ${permissionState.photo.isAuth}');
         Future<void> loadAssets() async {
-          final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList(
-            type: RequestType.image,
-            filterOption: FilterOptionGroup(containsPathModified: true),
-          );
+          final List<AssetPathEntity> paths =
+              await PhotoManager.getAssetPathList(
+                type: RequestType.image,
+                filterOption: FilterOptionGroup(containsPathModified: true),
+              );
 
-          if(paths.isNotEmpty){
-            final recentAssets = await paths.first.getAssetListRange(start: 0, end: 80);
+          if (paths.isNotEmpty) {
+            final recentAssets = await paths.first.getAssetListRange(
+              start: 0,
+              end: 80,
+            );
             assets.value = recentAssets;
           }
         }
+
         loadAssets();
       }
+      print('rlog :: photo state ${permissionState.photo.isAuth}');
       return null;
     }, [permissionState.photo]);
 
@@ -65,16 +70,7 @@ class ImagePickerPage extends HookConsumerWidget {
       title: const Text("사진 선택", style: TextStyle(fontWeight: FontWeight.bold)),
       useBackBtn: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: selectedAssets.value.isNotEmpty
-          ? SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: FloatingActionButton.extended(
-                onPressed: () => Navigator.pop(context, selectedAssets.value),
-                label: Text("${selectedAssets.value.length}장 선택 완료"),
-                backgroundColor: Colors.white,
-              ),
-            )
-          : null,
+      floatingActionButton: _buildSubmitButton(context, selectedAssets.value),
       // 우측 상단 완료 버튼
       child: GridView.builder(
         itemCount: assets.value.length + 1, // '추가' 버튼을 위해 +1
@@ -174,9 +170,30 @@ class ImagePickerPage extends HookConsumerWidget {
         },
       ),
     );
-
-
   }
 
-
+  Widget _buildSubmitButton(BuildContext context, List<AssetEntity> selected) {
+    if (selected.isNotEmpty) {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+          label: Text(
+            "${selected.length}장 선택",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.black87,
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+          label: Text("사진을 선택해주세요", style: TextStyle(color: Colors.grey[600])),
+          backgroundColor: Colors.grey[200],
+        ),
+      );
+    }
+  }
 }
