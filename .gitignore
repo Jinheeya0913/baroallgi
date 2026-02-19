@@ -43,6 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/local.properties
+/android/app/google-services.json
 
 # secure
 firebase_options.dart
@@ -52,13 +54,12 @@ firebase.json
 /ios
 /linux
 /macos
-/android
+
 /windows
 /web
 
 #불필요
 /build
-/assets
 /test
 
 
