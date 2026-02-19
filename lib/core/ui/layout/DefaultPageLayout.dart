@@ -29,16 +29,9 @@ class DefaultLayout extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasFab =
-        floatingActionButton != null &&
-            floatingActionButtonLocation != null;
-
-    // Hook 예시: 키보드 dismiss용 focus
-    // final focusScope = useFocusScope();
+        floatingActionButton != null && floatingActionButtonLocation != null;
 
     return Scaffold(
-      //resizeToAvoidBottomInset : false,
-      drawer: useDrawer == true ? renderDrawer() : null,
-      // const UserDrawer() : null,
       appBar: useAppBar ? _buildAppBar(context) : null,
       body: GestureDetector(
         behavior: HitTestBehavior.translucent, // 빈 공간 터치도 인식
@@ -53,22 +46,23 @@ class DefaultLayout extends HookConsumerWidget {
       bottomNavigationBar: bottomNavigationBar == null
           ? null
           : AnimatedPadding(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: SafeArea(
-          child: bottomNavigationBar!,
-        ),
-      ),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: SafeArea(child: bottomNavigationBar!),
+            ),
       floatingActionButton: hasFab ? floatingActionButton : null,
-      floatingActionButtonLocation:
-      hasFab ? floatingActionButtonLocation : null,
+      floatingActionButtonLocation: hasFab
+          ? floatingActionButtonLocation
+          : null,
       backgroundColor: Colors.white,
+      //resizeToAvoidBottomInset : false,
+      drawer: useDrawer == true ? renderDrawer() : null,
+      // const UserDrawer() : null,
     );
   }
-
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
@@ -85,16 +79,16 @@ class DefaultLayout extends HookConsumerWidget {
       ],
       leading: useBackBtn
           ? IconButton(
-        icon: const Icon(Icons.arrow_back_rounded),
-        onPressed: () => context.pop(),
-      )
+              icon: const Icon(Icons.arrow_back_rounded),
+              onPressed: () => context.pop(),
+            )
           : useDrawer
           ? Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
-      )
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            )
           : null,
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
