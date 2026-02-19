@@ -68,6 +68,9 @@ dependencies:
   flutter_quill: ^11.5.0
   flutter_quill_extensions: ^11.0.0
 
+  # 사진 라이브러리
+  photo_manager: ^3.8.3
+  photo_manager_image_provider: ^2.2.0
   # =============END CUSTOM=============
 
 dev_dependencies:
