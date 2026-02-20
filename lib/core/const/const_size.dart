@@ -21,6 +21,7 @@ const CONST_PADDING_16 = 16;
 const CONST_BTN_SIZE_30 = 30.0;
 const CONST_BTN_MINSIZE = Size(140, 60);
 
+
 // border
 
 const CONST_BORDER_RADIUS_CIR25 = 25.0;
@@ -31,3 +32,11 @@ const CONST_BORDER_RADIUS_CIR10 = 10.0;
 // TEXST
 const CNST_FONT_SIZE_NORMAL = 12.0;
 const CNST_FONT_SIZE_BIG = 16.0;
+
+class SizeUtil {
+
+  static double getFloatingButtonSize (BuildContext context){
+    return MediaQuery.of(context).size.width * 0.9;
+  }
+
+}
