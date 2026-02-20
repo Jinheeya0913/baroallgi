@@ -5,6 +5,8 @@ final selectImageProvider = StateNotifierProvider.autoDispose<SelectImageProvide
   return SelectImageProvider();
 });
 
+// 각 사진별 입력된 텍스트를 저장하는 Provider
+final imageTextProvider = StateProvider.autoDispose<Map<String, String>>((ref) => {});
 
 
 class SelectImageProvider extends StateNotifier<List<AssetEntity>> {

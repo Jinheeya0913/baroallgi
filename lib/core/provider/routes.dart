@@ -20,12 +20,20 @@ List<GoRoute> _routes = [
     path: '/report',
     name: 'report',
     builder: (context, state) => const ReportPage(),
+    routes: [
+      GoRoute(
+        path: 'cardEdit',
+        name: 'cardEdit',
+        builder: (context, state) => const CardEditPage(),
+      ),
+    ]
   ),
   GoRoute(
     path: '/image_picker',
     name: 'image_picker',
     builder: (context, state) => const ImagePickerPage(),
   ),
+
 
   //
 ];

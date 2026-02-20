@@ -3,6 +3,7 @@ import 'package:baroallgi/core/provider/permission_provider.dart';
 import 'package:baroallgi/core/provider/select_image_provider.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -10,8 +11,9 @@ import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class ImagePickerPage extends HookConsumerWidget {
   static String get routeName => 'image_picker';
+  final String nextPathName;
 
-  const ImagePickerPage({super.key});
+  const ImagePickerPage({super.key, this.nextPathName ='cardName'}); // 임시로 반드시 cardName으로 향하게 지정
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +23,7 @@ class ImagePickerPage extends HookConsumerWidget {
 
     // 상태 관리: 불러온 자산(Asset) 리스트와 선택된 리스트
     final assets = useState<List<AssetEntity>>([]);
-    final selectedAssets = useState<List<AssetEntity>>([]);
+    final selectedAssets = ref.watch(selectImageProvider);
     final maxCount = 20;
 
     useEffect(() {
@@ -46,7 +48,7 @@ class ImagePickerPage extends HookConsumerWidget {
         loadAssets();
       }
       return null;
-    }, [permissionState.photo]);
+    }, [permissionState.photo, selectedAssets]);
 
     // 권한이 없는 경우 (거부됨 또는 아직 결정 안 됨)
     if (!permissionState.photo.isAuth) {
@@ -72,7 +74,7 @@ class ImagePickerPage extends HookConsumerWidget {
       title: const Text("사진 선택", style: TextStyle(fontWeight: FontWeight.bold)),
       useBackBtn: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _buildSubmitButton(context, selectedAssets.value),
+      floatingActionButton: _buildSubmitButton(context, selectedAssets),
       // 우측 상단 완료 버튼
       child: GridView.builder(
         itemCount: assets.value.length + 1, // '추가' 버튼을 위해 +1
@@ -106,14 +108,14 @@ class ImagePickerPage extends HookConsumerWidget {
           }
 
           final asset = assets.value[index - 1];
-          final isSelected = selectedAssets.value.contains(asset);
-          final selectIndex = selectedAssets.value.indexOf(asset);
+          final isSelected = selectedAssets.contains(asset);
+          final selectIndex = selectedAssets.indexOf(asset);
 
           return GestureDetector(
             onTap: () {
               if (isSelected) {
                 selectImageNotifier.selectedImagesToggle(asset, maxCount);
-              } else if (selectedAssets.value.length < maxCount) {
+              } else if (selectedAssets.length < maxCount) {
                 selectImageNotifier.selectedImagesToggle(asset, maxCount);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +177,9 @@ class ImagePickerPage extends HookConsumerWidget {
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
         child: FloatingActionButton.extended(
-          onPressed: () {},
+          onPressed: () {
+            context.pushNamed('cardEdit');
+          },
           label: Text(
             "${selected.length}장 선택",
             style: TextStyle(color: Colors.white),
