@@ -7,13 +7,14 @@ import 'package:baroallgi/core/const/const_size.dart';
 class DefaultLayout extends HookConsumerWidget {
   final Widget child;
   final Widget? title;
-  final double? padding;
+  final EdgeInsetsGeometry? padding;
   final Widget? bottomNavigationBar;
   final bool useDrawer;
   final bool useAppBar;
   final bool useBackBtn;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? floatingActionButton;
+  final bool resiseWithKeyboard;
 
   const DefaultLayout({
     super.key,
@@ -26,6 +27,7 @@ class DefaultLayout extends HookConsumerWidget {
     this.useAppBar = true,
     this.floatingActionButtonLocation,
     this.floatingActionButton,
+    this.resiseWithKeyboard = true,
   });
 
   @override
@@ -34,13 +36,15 @@ class DefaultLayout extends HookConsumerWidget {
         floatingActionButton != null && floatingActionButtonLocation != null;
 
     return Scaffold(
+
+      resizeToAvoidBottomInset: false,
       appBar: useAppBar ? _buildAppBar(context) : null,
       body: GestureDetector(
         behavior: HitTestBehavior.translucent, // 빈 공간 터치도 인식
         onTap: () => FocusScope.of(context).unfocus(), // 바깥 터치 시 키보드 dismiss
         child: SafeArea(
           child: Padding(
-            padding: padding != null ? EdgeInsets.all(padding!) : EdgeInsets.all(CNST_SIZE_NORMAL),
+            padding: padding ?? EdgeInsets.all(CNST_SIZE_NORMAL),
             child: child,
           ),
         ),
@@ -55,10 +59,10 @@ class DefaultLayout extends HookConsumerWidget {
               ),
               child: SafeArea(child: bottomNavigationBar!),
             ),
-      floatingActionButton: hasFab ? floatingActionButton : null,
+      floatingActionButton: hasFab
+          ? floatingActionButton! : null,
       floatingActionButtonLocation: hasFab
-          ? floatingActionButtonLocation
-          : null,
+          ? floatingActionButtonLocation! : null,
       backgroundColor: Colors.white,
       //resizeToAvoidBottomInset : false,
       drawer: useDrawer == true ? renderDrawer() : null,

@@ -72,6 +72,7 @@ class ImagePickerPage extends HookConsumerWidget {
 
     return DefaultLayout(
       title: const Text("사진 선택", style: TextStyle(fontWeight: FontWeight.bold)),
+      padding: EdgeInsets.only(bottom: 80,), // 맨 아랫줄 사진이 잘 보이도록 패딩 조정
       useBackBtn: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _buildSubmitButton(context, selectedAssets),
