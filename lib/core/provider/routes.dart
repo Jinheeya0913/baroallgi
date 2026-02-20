@@ -26,14 +26,18 @@ List<GoRoute> _routes = [
         name: 'cardEdit',
         builder: (context, state) => const CardEditPage(),
       ),
-    ]
+    ],
   ),
   GoRoute(
     path: '/image_picker',
     name: 'image_picker',
     builder: (context, state) => const ImagePickerPage(),
   ),
-
+  GoRoute(
+    path: '/route_test',
+    name: 'route_test',
+    builder: (context, state) => const RouteTestPage(),
+  ),
 
   //
 ];

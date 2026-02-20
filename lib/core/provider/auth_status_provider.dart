@@ -24,7 +24,7 @@ class AuthStatusProvider extends ChangeNotifier {
   }
 
   String? redirectLogic(BuildContext context, GoRouterState state) {
-    final auth = ref.read(authNotifierProvider);
+    AuthModel? auth = ref.read(authNotifierProvider);
     final location = state.fullPath;
 
     print('rlog :: now full path : $location');
@@ -32,8 +32,11 @@ class AuthStatusProvider extends ChangeNotifier {
     final isSplash = state.fullPath == '/splash';
     final isLogin = state.fullPath == '/login';
 
+    // 테스트용
+    // auth = null;
+
     if (auth == null && isSplash) {
-      return null;
+      return '/login';
     }
 
     if(auth== null) {
