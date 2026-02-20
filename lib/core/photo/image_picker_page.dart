@@ -1,4 +1,6 @@
+import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/provider/permission_provider.dart';
+import 'package:baroallgi/core/provider/select_image_provider.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +17,7 @@ class ImagePickerPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final permissionState = ref.watch(permissionProvider);
     final permissionNotifier = ref.watch(permissionProvider.notifier);
+    final selectImageNotifier = ref.watch(selectImageProvider.notifier);
 
     // 상태 관리: 불러온 자산(Asset) 리스트와 선택된 리스트
     final assets = useState<List<AssetEntity>>([]);
@@ -42,7 +45,6 @@ class ImagePickerPage extends HookConsumerWidget {
 
         loadAssets();
       }
-      print('rlog :: photo state ${permissionState.photo.isAuth}');
       return null;
     }, [permissionState.photo]);
 
@@ -110,17 +112,13 @@ class ImagePickerPage extends HookConsumerWidget {
           return GestureDetector(
             onTap: () {
               if (isSelected) {
-                selectedAssets.value = selectedAssets.value
-                    .where((e) => e != asset)
-                    .toList();
+                selectImageNotifier.selectedImagesToggle(asset, maxCount);
+              } else if (selectedAssets.value.length < maxCount) {
+                selectImageNotifier.selectedImagesToggle(asset, maxCount);
               } else {
-                if (selectedAssets.value.length < maxCount) {
-                  selectedAssets.value = [...selectedAssets.value, asset];
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("최대 20장까지 선택 가능합니다.")),
-                  );
-                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("최대 20장까지 선택 가능합니다.")),
+                );
               }
             },
             child: Stack(
@@ -187,7 +185,7 @@ class ImagePickerPage extends HookConsumerWidget {
       );
     } else {
       return SizedBox(
-        width: MediaQuery.of(context).size.width * 0.9,
+        width: SizeUtil.getFloatingButtonSize(context),
         child: FloatingActionButton.extended(
           onPressed: () {},
           label: Text("사진을 선택해주세요", style: TextStyle(color: Colors.grey[600])),
