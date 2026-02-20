@@ -7,6 +7,7 @@ import 'package:baroallgi/core/const/const_size.dart';
 class DefaultLayout extends HookConsumerWidget {
   final Widget child;
   final Widget? title;
+  final double? padding;
   final Widget? bottomNavigationBar;
   final bool useDrawer;
   final bool useAppBar;
@@ -18,6 +19,7 @@ class DefaultLayout extends HookConsumerWidget {
     super.key,
     required this.child,
     this.title,
+    this.padding,
     this.bottomNavigationBar,
     this.useDrawer = false,
     this.useBackBtn = false,
@@ -38,7 +40,7 @@ class DefaultLayout extends HookConsumerWidget {
         onTap: () => FocusScope.of(context).unfocus(), // 바깥 터치 시 키보드 dismiss
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(CNST_SIZE_NORMAL),
+            padding: padding != null ? EdgeInsets.all(padding!) : EdgeInsets.all(CNST_SIZE_NORMAL),
             child: child,
           ),
         ),
