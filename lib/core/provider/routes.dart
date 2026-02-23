@@ -38,6 +38,18 @@ List<GoRoute> _routes = [
     name: 'route_test',
     builder: (context, state) => const RouteTestPage(),
   ),
+  GoRoute(
+    path: '/article_main',
+    name: 'article_main',
+    builder: (context, state) => const ArticleMainPage(),
+    routes: [
+      GoRoute(
+        path: 'article_detail',
+        name: 'article_detail',
+        builder: (context, state) => const ArticleDetailPage(),
+      ),
+    ]
+  ),
 
   //
 ];
