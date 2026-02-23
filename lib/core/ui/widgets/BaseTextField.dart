@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/theme/theme_color.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class BaseTextField extends StatelessWidget {
+class BaseTextField extends HookWidget {
   // TEXT 입력값
   final String? hintText; // 힌트 텍스트
   final String? errorText; // 에러 텍스트
@@ -40,6 +41,8 @@ class BaseTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final GestureTapCallback? onTap;
 
+  final bool scrollToBottom;
+
   const BaseTextField({
     super.key,
     this.onChanged,
@@ -67,11 +70,48 @@ class BaseTextField extends StatelessWidget {
     this.focusNode,
     this.hintStyle,
     this.onTap,
+    this.scrollToBottom = false,
     // 포커스 노드
   });
 
   @override
   Widget build(BuildContext context) {
+    final internalFocusNode = focusNode ?? useFocusNode();
+
+    useEffect(() {
+      void listener() {
+        if (internalFocusNode.hasFocus) {
+          final scrollable = Scrollable.of(internalFocusNode.context!);
+          if (internalFocusNode.context != null) {
+            if (scrollToBottom) {
+              print('rlog :: 스크롤 최하단으로!');
+              Future.delayed(const Duration(milliseconds: 500), () {
+                scrollable.position.animateTo(
+                  scrollable.position.maxScrollExtent,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOut,
+                );
+              });
+
+            } else {
+              print('rlog :: 스크롤 최하단 안가네?!');
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Scrollable.ensureVisible(
+                  internalFocusNode.context!,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  alignment: 2.0,
+                );
+              });
+            }
+          }
+        }
+      }
+
+      internalFocusNode.addListener(listener);
+      return () => internalFocusNode.removeListener(listener);
+    }, [internalFocusNode,scrollToBottom]);
+
     final baseBorder = OutlineInputBorder(
       borderSide: BorderSide(color: borderColor, width: borderWidth),
       borderRadius: BorderRadius.all(Radius.circular(circleBorder)),
@@ -100,7 +140,7 @@ class BaseTextField extends StatelessWidget {
       // 포커스
       autofocus: autoFocus,
       // 자동 포커스
-      focusNode: focusNode,
+      focusNode: internalFocusNode,
       // 수동 포커스
 
       // 꾸미기
@@ -114,8 +154,7 @@ class BaseTextField extends StatelessWidget {
         // hint
         hintText: hintText,
         hintStyle:
-            hintStyle ??
-            TextStyle(color: Colors.grey, fontSize: CNST_SIZE_14),
+            hintStyle ?? TextStyle(color: Colors.grey, fontSize: CNST_SIZE_14),
         // error
         errorText: errorText,
 
