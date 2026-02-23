@@ -2,6 +2,7 @@ import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/AppLogoImg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -22,6 +23,8 @@ class HomePage extends HookConsumerWidget {
       title: _title(),
       useAppBar: true,
       useDrawer: true,
+      floatingActionButton: _buildFloatButtons(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -333,5 +336,29 @@ class HomePage extends HookConsumerWidget {
   Widget _title() {
 
     return AppLogoImg(isHorizontal: true, width: 150,);
+  }
+
+  Widget _buildFloatButtons(){
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      animatedIconTheme: const IconThemeData(size: 22.0),
+      overlayColor: Colors.black,
+      overlayOpacity: 0.4,
+      spacing: 10,
+      children: [
+        SpeedDialChild(
+          child: Icon(Icons.create,),
+          onTap: (){},
+          backgroundColor: Colors.white,
+          label: '카드뉴스 작성하기'
+        ),
+        SpeedDialChild(
+            child: Icon(Icons.image,),
+            onTap: (){},
+            backgroundColor: Colors.blue,
+            label: 'open image'
+        ),
+      ],
+    );
   }
 }
