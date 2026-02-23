@@ -179,7 +179,7 @@ class ImagePickerPage extends HookConsumerWidget {
         width: MediaQuery.of(context).size.width * 0.9,
         child: FloatingActionButton.extended(
           onPressed: () {
-            context.pushNamed('cardEdit');
+            context.pushNamed('articleCard');
           },
           label: Text(
             "${selected.length}장 선택",

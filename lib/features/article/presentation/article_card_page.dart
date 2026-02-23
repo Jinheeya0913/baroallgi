@@ -7,10 +7,10 @@ import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class CardEditPage extends HookConsumerWidget {
-  static String get routeName => 'cardEdit';
+class ArticleCardPage extends HookConsumerWidget {
+  static String get routeName => 'article_card';
 
-  const CardEditPage({super.key});
+  const ArticleCardPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

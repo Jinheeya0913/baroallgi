@@ -21,11 +21,6 @@ List<GoRoute> _routes = [
     name: 'report',
     builder: (context, state) => const ReportPage(),
     routes: [
-      GoRoute(
-        path: 'cardEdit',
-        name: 'cardEdit',
-        builder: (context, state) => const CardEditPage(),
-      ),
     ],
   ),
   GoRoute(
@@ -47,6 +42,11 @@ List<GoRoute> _routes = [
         path: 'article_detail',
         name: 'article_detail',
         builder: (context, state) => const ArticleDetailPage(),
+      ),
+      GoRoute(
+        path: 'article_card',
+        name: 'article_card',
+        builder: (context, state) => const ArticleCardPage(),
       ),
     ]
   ),
