@@ -86,15 +86,16 @@ class BaseTextField extends StatelessWidget {
       inputFormatters: [if (digitOnly) FilteringTextInputFormatter.digitsOnly],
       // 입력 양식
       maxLength: maxLength == null ? null : maxLength,
-      // 입력길이 제한
+      // 입력길이 제한 null => 여러 줄 입력 가능
       maxLines: hideText == true ? 1 : maxLines,
       cursorColor: cursorColor,
+      // 암호 텍스트
       obscureText: hideText,
       obscuringCharacter: '*',
       // 이벤트
       onFieldSubmitted: onFieldSubmitted,
       onChanged: onChanged,
-      textInputAction: inputAction ?? TextInputAction.newline,
+      textInputAction: inputAction ?? TextInputAction.done,
       onTap: onTap,
       // 포커스
       autofocus: autoFocus,
@@ -114,7 +115,7 @@ class BaseTextField extends StatelessWidget {
         hintText: hintText,
         hintStyle:
             hintStyle ??
-            TextStyle(color: THEME_COLOR_MAIN, fontSize: CNST_SIZE_14),
+            TextStyle(color: Colors.grey, fontSize: CNST_SIZE_14),
         // error
         errorText: errorText,
 
