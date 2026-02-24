@@ -1,3 +1,4 @@
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_floating_btn.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
@@ -61,13 +62,13 @@ class ArticleMainPage extends HookConsumerWidget {
                     height: 50,
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  selectedColor: Colors.white,
-                  fillColor: Colors.black,
+                  selectedColor: AppColors.subColorGhost,
+                  fillColor: AppColors.primaryBlue,
                   color: Colors.black54,
                   isSelected: isSelected,
                   onPressed: (index) => selectedIndex.value = index,
                   children: const [
-                    Text('카드뉴스', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('카드', style: TextStyle(fontWeight: FontWeight.bold)),
                     Text('게시글', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 );
