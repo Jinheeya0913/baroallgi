@@ -6,7 +6,7 @@ part 'article_model.g.dart';
 
 @JsonSerializable()
 class ArticleModel {
-  final String id;
+  final String? id;
   final String title;
   final String authorId;
   final String authorName;
@@ -19,7 +19,7 @@ class ArticleModel {
   final String? thumbnailUrl;
 
   ArticleModel({
-    required this.id,
+    this.id,
     required this.title,
     required this.authorId,
     required this.authorName,
@@ -32,6 +32,37 @@ class ArticleModel {
     this.thumbnailUrl,
   });
 
-  factory ArticleModel.fromJson(Map<String, dynamic> json) => _$ArticleModelFromJson(json);
+  factory ArticleModel.fromJson(Map<String, dynamic> json) =>
+      _$ArticleModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$ArticleModelToJson(this);
+
+  // copyWith 메서드 구현
+  ArticleModel copyWith({
+    String? id,
+    String? title,
+    String? authorId,
+    String? authorName,
+    ArticleType? articleType,
+    String? category,
+    String? summary,
+    bool? isPublished,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? thumbnailUrl,
+  }) {
+    return ArticleModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      articleType: articleType ?? this.articleType,
+      category: category ?? this.category,
+      summary: summary ?? this.summary,
+      isPublished: isPublished ?? this.isPublished,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+    );
+  }
 }

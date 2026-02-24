@@ -19,5 +19,10 @@ abstract class ArticleCommonModel {
     }
   }
 
+  ArticleCommonModel copyWith({
+    String? articleId,
+    List<ArticleReferenceModel>? references,
+  });
+
   Map<String, dynamic> toJson();
 }

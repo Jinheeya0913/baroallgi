@@ -16,6 +16,19 @@ class ArticlePostModel extends ArticleCommonModel {
     super.references,
   });
 
+  @override
+  ArticlePostModel copyWith({
+    String? articleId,
+    List<ArticleReferenceModel>? references,
+    Map<String, dynamic>? content, // PostModel만의 필드 추가
+  }) {
+    return ArticlePostModel(
+      articleId: articleId ?? this.articleId,
+      references: references ?? this.references,
+      content: content ?? this.content,
+    );
+  }
+
 
   factory ArticlePostModel.fromJson(Map<String, dynamic> json) => _$ArticlePostModelFromJson(json);
   
