@@ -1,5 +1,5 @@
 import 'package:baroallgi/core/provider/select_image_provider.dart';
-import 'package:baroallgi/core/ui/widgets/TextEditSheet.dart';
+import 'package:baroallgi/core/ui/widgets/base_edit_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

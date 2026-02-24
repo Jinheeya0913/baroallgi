@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
-import 'package:baroallgi/core/ui/widgets/BaseTextField.dart';
+import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 
 class SingUpPage extends HookConsumerWidget {
   const SingUpPage({super.key});

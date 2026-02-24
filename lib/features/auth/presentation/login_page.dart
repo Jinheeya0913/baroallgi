@@ -1,13 +1,13 @@
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
-import 'package:baroallgi/core/ui/widgets/AppLogoImg.dart';
-import 'package:baroallgi/core/ui/widgets/BaseSnackBar.dart';
+import 'package:baroallgi/core/ui/widgets/app_logo_img.dart';
+import 'package:baroallgi/core/ui/widgets/base_snack_bar.dart';
 import 'package:baroallgi/features/auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
-import 'package:baroallgi/core/ui/widgets/BaseTextField.dart';
+import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 
 class LoginPage extends HookConsumerWidget {
   static String get routeName => 'login';

@@ -1,5 +1,5 @@
 import 'package:baroallgi/core/const/const_size.dart';
-import 'package:baroallgi/core/ui/widgets/BaseTextField.dart';
+import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -34,14 +34,21 @@ class ReportPage extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('제목', style: TextStyle(fontSize: CNST_FONT_SIZE_BIG)),
-              SizedBox(width: CNST_SIZE_NORMAL,),
+              SizedBox(width: CNST_SIZE_NORMAL),
               Expanded(
                 child: BaseTextField(
+                  maxLength: 20,
+                  errorText: '제목은 20자 이하로 작성해주셔야 합니다.',
                   contentPadding: 4.0,
                   useBorder: false,
                   style: TextStyle(fontSize: CNST_FONT_SIZE_NORMAL),
                 ),
               ),
+            ],
+          ),
+          // 토글 임시 row... 변경 예정
+          Row(
+            children: [
               Container(
                 alignment: Alignment.centerRight,
                 child: IconButton(

@@ -26,10 +26,12 @@ class RouteTestPage extends StatelessWidget {
             const SizedBox(height: 24),
             _sectionTitle('Nested & Sub Routes'),
             _buildPushCard(context, 'Report Main', '/report', Icons.assessment),
+            _buildPushCard(context, 'Article Main', '/article_main', Icons.article),
+            _buildPushCard(context, 'Article Detail', '/article_main/article_detail', Icons.article),
             _buildPushCard(
                 context,
                 'Card Edit (Sub)',
-                '/report/cardEdit',
+                '/article_main/article_card',
                 Icons.edit_note,
                 isSub: true
             ),

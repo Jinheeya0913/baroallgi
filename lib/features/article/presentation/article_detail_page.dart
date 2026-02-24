@@ -1,7 +1,7 @@
 import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
-import 'package:baroallgi/core/ui/widgets/BaseFloatingButton.dart';
-import 'package:baroallgi/core/ui/widgets/BaseTextField.dart';
+import 'package:baroallgi/core/ui/widgets/base_floating_btn.dart';
+import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/core/ui/widgets/base_elevated_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

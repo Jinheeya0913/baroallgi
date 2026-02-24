@@ -1,6 +1,6 @@
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
-import 'package:baroallgi/core/ui/widgets/AppLogoImg.dart';
+import 'package:baroallgi/core/ui/widgets/app_logo_img.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
