@@ -1,4 +1,5 @@
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
+import 'package:baroallgi/core/ui/widgets/BaseFloatingButton.dart';
 import 'package:baroallgi/core/ui/widgets/BaseTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -19,9 +20,13 @@ class ArticleMainPage extends HookConsumerWidget {
     final summaryController = useTextEditingController();
     final selectedIndex = useState(0); // 0: 카드뉴스, 1: 게시글
     final isSelected = [selectedIndex.value == 0, selectedIndex.value == 1];
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return DefaultLayout(
+      resiseWithKeyboard: true,
       title: Text('작성 페이지'),
+      floatingActionButton: isKeyboardVisible ? null: BaseFloatingButton(label: '다음 단계로'),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -39,6 +44,8 @@ class ArticleMainPage extends HookConsumerWidget {
             BaseTextField(
               controller: titleController,
               hintText: '예: [부고 문자] 링크 클릭하면 폰이 해킹된다?',
+              inputAction: TextInputAction.done,
+
             ),
 
             const SizedBox(height: 32),
@@ -77,13 +84,14 @@ class ArticleMainPage extends HookConsumerWidget {
             const SizedBox(height: 12),
             BaseTextField(
               controller: summaryController,
+              scrollToBottom: true,
               maxLines: 3,
               hintText: '이 정보에 대해 전문가로서 내리는 핵심 결론을 적어주세요.',
             ),
 
-            const SizedBox(height: 40),
+            SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 50),
 
-            // 다음 단계 버튼
+            /*// 다음 단계 버튼
             SizedBox(
               width: double.infinity,
               height: 56,
@@ -102,7 +110,7 @@ class ArticleMainPage extends HookConsumerWidget {
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),

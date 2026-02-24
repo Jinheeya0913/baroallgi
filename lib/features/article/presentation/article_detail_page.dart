@@ -1,5 +1,8 @@
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
+import 'package:baroallgi/core/ui/widgets/BaseFloatingButton.dart';
 import 'package:baroallgi/core/ui/widgets/BaseTextField.dart';
+import 'package:baroallgi/core/ui/widgets/base_elevated_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -26,44 +29,41 @@ class ArticleDetailPage extends HookConsumerWidget {
     final isToolbarVisible = useState(true);
 
     return DefaultLayout(
-      title: Text('작성'),
+      title: Text('본문 작성'),
+      actions: [
+        Container(
+          alignment: Alignment.centerRight,
+          child: IconButton(
+            icon: Icon(
+              isToolbarVisible.value
+                  ? Icons.keyboard_arrow_up
+                  : Icons.format_paint,
+            ),
+            onPressed: () => isToolbarVisible.value = !isToolbarVisible.value,
+            tooltip: '툴바 토글',
+          ),
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('제목', style: TextStyle(fontSize: CNST_FONT_SIZE_BIG)),
-              SizedBox(width: CNST_SIZE_NORMAL),
-              Expanded(
-                child: BaseTextField(
-                  maxLength: 20,
-                  errorText: '제목은 20자 이하로 작성해주셔야 합니다.',
-                  contentPadding: 4.0,
-                  useBorder: false,
-                  style: TextStyle(fontSize: CNST_FONT_SIZE_NORMAL),
-                ),
-              ),
-            ],
-          ),
-          // 토글 임시 row... 변경 예정
-          Row(
-            children: [
-              Container(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  icon: Icon(
-                    isToolbarVisible.value
-                        ? Icons.keyboard_arrow_up
-                        : Icons.format_paint,
-                  ),
-                  onPressed: () =>
-                  isToolbarVisible.value = !isToolbarVisible.value,
-                  tooltip: '툴바 토글',
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Container(
+          //       alignment: Alignment.centerRight,
+          //       child: IconButton(
+          //         icon: Icon(
+          //           isToolbarVisible.value
+          //               ? Icons.keyboard_arrow_up
+          //               : Icons.format_paint,
+          //         ),
+          //         onPressed: () =>
+          //         isToolbarVisible.value = !isToolbarVisible.value,
+          //         tooltip: '툴바 토글',
+          //       ),
+          //     ),
+          //   ],
+          // ),
           if (isToolbarVisible.value) ...[Divider()],
           AnimatedCrossFade(
             firstChild: QuillSimpleToolbar(
@@ -95,14 +95,37 @@ class ArticleDetailPage extends HookConsumerWidget {
             child: QuillEditor.basic(
               controller: _controller,
               config: QuillEditorConfig(
+                placeholder: '본문을 적어주세요',
                 embedBuilders: kIsWeb
                     ? FlutterQuillEmbeds.editorWebBuilders()
                     : FlutterQuillEmbeds.editorBuilders(),
               ),
             ),
           ),
+          Row(
+            children: [
+              Expanded(
+                child: BaseElevatedButton(
+                  text: '임시저장',
+                  onPressed: () {},
+                  gradientColors: [
+                    AppColors.subColorBlue,
+                    AppColors.subColorBlue,
+                  ],
+                ),
+              ),
+              SizedBox(width: CNST_SIZE_NORMAL),
+              Expanded(
+                child: BaseElevatedButton(text: '작성 완료', onPressed: () {}),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
+
+  // Widget _buildToggleButton() {
+  //   return
+  // }
 }
