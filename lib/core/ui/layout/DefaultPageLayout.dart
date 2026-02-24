@@ -1,3 +1,4 @@
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/ui/widgets/BaseDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +16,7 @@ class DefaultLayout extends HookConsumerWidget {
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? floatingActionButton;
   final bool resiseWithKeyboard;
+  final List<Widget>? actions;
 
   const DefaultLayout({
     super.key,
@@ -25,19 +27,18 @@ class DefaultLayout extends HookConsumerWidget {
     this.useDrawer = false,
     this.useBackBtn = false,
     this.useAppBar = true,
-    this.floatingActionButtonLocation,
+    this.floatingActionButtonLocation = FloatingActionButtonLocation.endFloat,
     this.floatingActionButton,
     this.resiseWithKeyboard = true,
+    this.actions,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasFab =
-        floatingActionButton != null && floatingActionButtonLocation != null;
+    final hasFab = floatingActionButton != null;
 
     return Scaffold(
-
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: resiseWithKeyboard,
       appBar: useAppBar ? _buildAppBar(context) : null,
       body: GestureDetector(
         behavior: HitTestBehavior.translucent, // 빈 공간 터치도 인식
@@ -59,10 +60,8 @@ class DefaultLayout extends HookConsumerWidget {
               ),
               child: SafeArea(child: bottomNavigationBar!),
             ),
-      floatingActionButton: hasFab
-          ? floatingActionButton! : null,
-      floatingActionButtonLocation: hasFab
-          ? floatingActionButtonLocation! : null,
+      floatingActionButton: hasFab ? floatingActionButton! : null,
+      floatingActionButtonLocation: floatingActionButtonLocation,
       backgroundColor: Colors.white,
       //resizeToAvoidBottomInset : false,
       drawer: useDrawer == true ? renderDrawer() : null,
@@ -70,37 +69,61 @@ class DefaultLayout extends HookConsumerWidget {
     );
   }
 
+  // AppBar _buildAppBar(BuildContext context) {
+  //   return AppBar(
+  //     title: title,
+  //     actions: actions,
+  //     leading: useBackBtn
+  //         ? IconButton(
+  //             icon: const Icon(Icons.arrow_back_rounded),
+  //             onPressed: () => context.pop(),
+  //           )
+  //         : useDrawer
+  //         ? Builder(
+  //             builder: (context) => IconButton(
+  //               icon: const Icon(Icons.menu),
+  //               onPressed: () => Scaffold.of(context).openDrawer(),
+  //             ),
+  //           )
+  //         : null,
+  //     backgroundColor: Colors.white,
+  //     surfaceTintColor: Colors.white,
+  //     centerTitle: true,
+  //     elevation: 0,
+  //     toolbarHeight: 60,
+  //   );
+  // }
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      title: title,
-      actions: [
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: const Badge(
-        //     label: Text('2'),
-        //     backgroundColor: THEME_COLOR_MAIN,
-        //     child: Icon(Icons.notifications),
-        //   ),
-        // ),
-      ],
-      leading: useBackBtn
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back_rounded),
-              onPressed: () => context.pop(),
-            )
-          : useDrawer
-          ? Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
-            )
-          : null,
+      title: title, // 로고 이미지
+      centerTitle: true,
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-      centerTitle: true,
+      actions: actions,
       elevation: 0,
-      toolbarHeight: 80,
+      toolbarHeight: 60,
+      leading: useBackBtn
+          ? IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+        onPressed: () => context.pop(),
+        color: AppColors.primaryNavy,
+      )
+          : useDrawer
+          ? Builder(
+        builder: (context) => IconButton(
+          icon: const Icon(Icons.menu_rounded, size: 28),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          color: AppColors.primaryNavy,
+        ),
+      )
+          : null,
+      // bottom: PreferredSize(
+      //   preferredSize: const Size.fromHeight(1.0),
+      //   child: Container(
+      //     color: AppColors.divider,
+      //     height: 1.0,
+      //   ),
+      // ),
     );
   }
 
