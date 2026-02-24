@@ -7,5 +7,13 @@ class BaseResponse<T> {
 
   BaseResponse({required this.resultCode, this.resultMsg, this.data});
 
+  factory  BaseResponse.successResult(T? data) {
+    return BaseResponse(resultCode: '00', resultMsg: '성공', data: data);
+  }
+
+  factory  BaseResponse.failResult(String? resultCode, String? resultMsg) {
+    return BaseResponse(resultCode: resultCode ?? '99', resultMsg: resultMsg ?? '실패');
+  }
+
   bool get isSuccess => resultCode == '00';
 }
