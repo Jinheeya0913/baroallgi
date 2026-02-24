@@ -1,4 +1,5 @@
 import 'package:baroallgi/core/const/const_code.dart';
+import 'package:baroallgi/core/provider/firebase_provider.dart';
 import 'package:baroallgi/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository.dart';
 import 'package:baroallgi/features/auth/models/auth_model.dart';
@@ -7,17 +8,6 @@ import 'package:baroallgi/features/auth/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// 1. firebase instance provider
-final firebaseAuthProvider = Provider<FirebaseAuth>(
-  (ref) => FirebaseAuth.instance,
-);
-
-// 2. data source provider
-final authDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  return AuthRemoteDataSource(ref.watch(firebaseAuthProvider));
-});
-
-// 3. Repository Provider (화면단에서만 보는 프로바이더)
 final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) {
   return AuthRepositoryImpl(ref.watch(authDataSourceProvider));
 });
