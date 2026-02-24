@@ -20,11 +20,12 @@ class ArticlePostModel extends ArticleCommonModel {
   ArticlePostModel copyWith({
     String? articleId,
     List<ArticleReferenceModel>? references,
-    Map<String, dynamic>? content, // PostModel만의 필드 추가
+    Map<String, dynamic>? content, List<String>? imageUrls, // PostModel만의 필드 추가
   }) {
     return ArticlePostModel(
       articleId: articleId ?? this.articleId,
       references: references ?? this.references,
+      imageUrls: imageUrls ?? imageUrls,
       content: content ?? this.content,
     );
   }
