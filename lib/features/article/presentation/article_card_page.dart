@@ -9,8 +9,9 @@ import 'package:photo_manager/photo_manager.dart';
 
 class ArticleCardPage extends HookConsumerWidget {
   static String get routeName => 'article_card';
+  final Map<String, dynamic>? data;
 
-  const ArticleCardPage({super.key});
+  const ArticleCardPage({super.key, this.data});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,7 +55,7 @@ class ArticleCardPage extends HookConsumerWidget {
                               color: Colors.black.withOpacity(0.6),
                               blurRadius: 40,
                               offset: const Offset(0, 20),
-                            )
+                            ),
                           ],
                         ),
                         child: AspectRatio(
@@ -78,21 +79,34 @@ class ArticleCardPage extends HookConsumerWidget {
                       Expanded(
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onTap: () => _showTextEditDialog(context, ref, asset.id, currentText),
+                          onTap: () => _showTextEditDialog(
+                            context,
+                            ref,
+                            asset.id,
+                            currentText,
+                          ),
                           child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(horizontal: 40),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.format_quote_rounded, color: Colors.white.withOpacity(0.1), size: 45),
+                                Icon(
+                                  Icons.format_quote_rounded,
+                                  color: Colors.white.withOpacity(0.1),
+                                  size: 45,
+                                ),
                                 const SizedBox(height: 15),
                                 Text(
-                                  hasText ? currentText : "여기를 눌러서\n멋진 문구를 추가해보세요",
+                                  hasText
+                                      ? currentText
+                                      : "여기를 눌러서\n멋진 문구를 추가해보세요",
                                   textAlign: TextAlign.center,
                                   maxLines: 5,
                                   style: TextStyle(
-                                    color: hasText ? Colors.white : Colors.white24,
+                                    color: hasText
+                                        ? Colors.white
+                                        : Colors.white24,
                                     fontSize: 19,
                                     fontWeight: FontWeight.w600,
                                     height: 1.6,
@@ -120,23 +134,41 @@ class ArticleCardPage extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 22),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: Text(
                         "${currentPage.value} / ${selectedImages.length}",
-                        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: const Text("완료", style: TextStyle(color: Colors.amber, fontSize: 16, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        "완료",
+                        style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -149,7 +181,12 @@ class ArticleCardPage extends HookConsumerWidget {
   }
 
   // 3. ✅ [화이트 톤] 바텀 시트 호출
-  void _showTextEditDialog(BuildContext context, WidgetRef ref, String assetId, String initialText) {
+  void _showTextEditDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String assetId,
+    String initialText,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -159,10 +196,9 @@ class ArticleCardPage extends HookConsumerWidget {
         return TextEditSheet(
           initialText: initialText,
           onSave: (text) {
-            ref.read(imageTextProvider.notifier).update((state) => {
-              ...state,
-              assetId: text,
-            });
+            ref
+                .read(imageTextProvider.notifier)
+                .update((state) => {...state, assetId: text});
           },
         );
       },
@@ -171,18 +207,22 @@ class ArticleCardPage extends HookConsumerWidget {
 }
 
 // ---------------------------------------------------------
-// 사진 및 렌더링 상태 유지를 위한 위젯
+// 사진 및 렌더링 상태 유지를 위해 Stateful
 // ---------------------------------------------------------
 class _KeepAlivePage extends StatefulWidget {
   final Widget child;
+
   const _KeepAlivePage({required this.child});
+
   @override
   State<_KeepAlivePage> createState() => _KeepAlivePageState();
 }
 
-class _KeepAlivePageState extends State<_KeepAlivePage> with AutomaticKeepAliveClientMixin {
+class _KeepAlivePageState extends State<_KeepAlivePage>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
