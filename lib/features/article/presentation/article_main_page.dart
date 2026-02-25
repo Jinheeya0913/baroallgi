@@ -2,8 +2,11 @@ import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_floating_btn.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
+import 'package:baroallgi/features/article/models/article_model.dart';
+import 'package:baroallgi/features/article/models/article_type_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:baroallgi/core/const/app_metadata.dart'; // 앞서 논의한 상수 파일
 
@@ -23,10 +26,37 @@ class ArticleMainPage extends HookConsumerWidget {
     final isSelected = [selectedIndex.value == 0, selectedIndex.value == 1];
     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
+    // ArticleModel Infos
+    final articleType = selectedIndex.value == 0 ? 'card' : 'post';
+    final title = titleController.text;
+    final category = selectedCategory.value;
+    final summary = summaryController.text;
+
+    // 임시로 ID는 authorId와 Name은 하드코딩
+    final authorId = 'BVE8aeEqXcamjtWNb7pFLgvQGFW2';
+    final authorName = 'testName';
+
     return DefaultLayout(
       resiseWithKeyboard: true,
       title: Text('작성 페이지'),
-      floatingActionButton: isKeyboardVisible ? null: BaseFloatingButton(label: '다음 단계로'),
+      floatingActionButton: isKeyboardVisible
+          ? null
+          : BaseFloatingButton(
+              label: '다음 단계로',
+              onPressed: () {
+                final articleMain = ArticleModel(
+                  title: titleController.text,
+                  authorId: authorId,
+                  authorName: authorName,
+                  articleType: selectedIndex.value == 0 ? ArticleType.CARD : ArticleType.POST,
+                  category: category,
+                  summary: summary,
+                  isPublished: false,
+                );
+
+                _goImagePickerPage(context, articleMain);
+              },
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -46,7 +76,6 @@ class ArticleMainPage extends HookConsumerWidget {
               controller: titleController,
               hintText: '예: [부고 문자] 링크 클릭하면 폰이 해킹된다?',
               inputAction: TextInputAction.done,
-
             ),
 
             const SizedBox(height: 32),
@@ -188,6 +217,13 @@ class ArticleMainPage extends HookConsumerWidget {
         title,
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
+    );
+  }
+
+  void _goImagePickerPage(BuildContext context, ArticleModel articleMain) {
+    context.pushNamed(
+      'image_picker',
+      extra: {'articleMain': articleMain.toJson(), 'nextRoute': 'testNext'},
     );
   }
 }

@@ -20,13 +20,17 @@ List<GoRoute> _routes = [
     path: '/report',
     name: 'report',
     builder: (context, state) => const ReportPage(),
-    routes: [
-    ],
+    routes: [],
   ),
   GoRoute(
     path: '/image_picker',
     name: 'image_picker',
-    builder: (context, state) => const ImagePickerPage(),
+    builder: (context, state) {
+      final data = state.extra as Map<String, dynamic>;
+
+      print('rlog :: articleMain :: ${data['articleMain']}');
+      return ImagePickerPage(nextRoute: data['nextRoute'], data : data['articleMain']);
+    },
   ),
   GoRoute(
     path: '/route_test',
@@ -48,7 +52,7 @@ List<GoRoute> _routes = [
         name: 'article_card',
         builder: (context, state) => const ArticleCardPage(),
       ),
-    ]
+    ],
   ),
 
   //

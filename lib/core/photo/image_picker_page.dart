@@ -11,9 +11,14 @@ import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class ImagePickerPage extends HookConsumerWidget {
   static String get routeName => 'image_picker';
-  final String nextPathName;
+  final String nextRoute;
+  final Map<String,dynamic>? data;
 
-  const ImagePickerPage({super.key, this.nextPathName ='cardName'}); // 임시로 반드시 cardName으로 향하게 지정
+  const ImagePickerPage({
+    super.key,
+    required this.nextRoute,
+    this.data,
+  }); // 임시로 반드시 cardName으로 향하게 지정
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -72,7 +77,8 @@ class ImagePickerPage extends HookConsumerWidget {
 
     return DefaultLayout(
       title: const Text("사진 선택", style: TextStyle(fontWeight: FontWeight.bold)),
-      padding: EdgeInsets.only(bottom: 80,), // 맨 아랫줄 사진이 잘 보이도록 패딩 조정
+      padding: EdgeInsets.only(bottom: 80),
+      // 맨 아랫줄 사진이 잘 보이도록 패딩 조정
       useBackBtn: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _buildSubmitButton(context, selectedAssets),
