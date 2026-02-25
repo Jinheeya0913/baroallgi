@@ -13,9 +13,9 @@ class ArticleModel {
   final ArticleType articleType;
   final String category;
   final String summary;
-  final bool isPublished;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final bool? isPublished;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final String? thumbnailUrl;
 
   ArticleModel({
@@ -26,9 +26,9 @@ class ArticleModel {
     required this.articleType,
     required this.category,
     required this.summary,
-    required this.isPublished,
-    required this.createdAt,
-    required this.updatedAt,
+    this.isPublished = false,
+    this.createdAt,
+    this.updatedAt,
     this.thumbnailUrl,
   });
 
