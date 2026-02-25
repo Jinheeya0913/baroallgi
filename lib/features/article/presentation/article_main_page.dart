@@ -1,6 +1,7 @@
 import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_floating_btn.dart';
+import 'package:baroallgi/core/ui/widgets/base_snack_bar.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
 import 'package:baroallgi/features/article/models/article_type_enum.dart';
@@ -26,9 +27,6 @@ class ArticleMainPage extends HookConsumerWidget {
     final isSelected = [selectedIndex.value == 0, selectedIndex.value == 1];
     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    // ArticleModel Infos
-    final articleType = selectedIndex.value == 0 ? 'card' : 'post';
-    final title = titleController.text;
     final category = selectedCategory.value;
     final summary = summaryController.text;
 
@@ -48,13 +46,26 @@ class ArticleMainPage extends HookConsumerWidget {
                   title: titleController.text,
                   authorId: authorId,
                   authorName: authorName,
-                  articleType: selectedIndex.value == 0 ? ArticleType.CARD : ArticleType.POST,
+                  articleType: selectedIndex.value == 0
+                      ? ArticleType.CARD
+                      : ArticleType.POST,
                   category: category,
                   summary: summary,
                   isPublished: false,
                 );
 
-                _goImagePickerPage(context, articleMain);
+                // 검증용
+                // null : 성공
+                // null 아님 : 실패
+                String? validResultMsg = _validInputValues(articleMain);
+
+                if (validResultMsg != null) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(BaseSnackBar(content: Text(validResultMsg)));
+                } else {
+                  _goImagePickerPage(context, articleMain);
+                }
               },
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -223,7 +234,22 @@ class ArticleMainPage extends HookConsumerWidget {
   void _goImagePickerPage(BuildContext context, ArticleModel articleMain) {
     context.pushNamed(
       'image_picker',
-      extra: {'articleMain': articleMain.toJson(), 'nextRoute': 'testNext'},
+      extra: {
+        'articleMain': articleMain.toJson(),
+        'nextRoute': 'article_card',
+        'pageTitle': '카드 사진 선택',
+      },
     );
+  }
+
+  String? _validInputValues(ArticleModel articleMain) {
+    String? errorMessage;
+
+    if (articleMain.title.isEmpty) {
+      errorMessage = '제목을 입력해주시길 바랍니다.';
+    } else if (articleMain.summary.isEmpty) {
+      errorMessage = '요약을 입력해주시길 바랍니다.';
+    }
+    return errorMessage;
   }
 }
