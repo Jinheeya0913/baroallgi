@@ -52,11 +52,16 @@ List<GoRoute> _routes = [
         builder: (context, state) => const ArticleDetailPage(),
       ),
       GoRoute(
-        path: 'article_card',
-        name: 'article_card',
+        path: 'article_fullImg_edit',
+        name: 'article_fullImg_edit',
+        builder: (context, state) => const ArticleFullImgPage(),
+      ),
+      GoRoute(
+        path: 'article_card_edit',
+        name: 'article_card_edit',
         builder: (context, state) {
           final data = state.extra as Map<String,dynamic>;
-          print('rlog :: article_card : data : ${data}');
+          print('rlog :: article_card_edit > data : ${data}');
           return ArticleCardPage(
             data: data,
           );

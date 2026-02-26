@@ -8,7 +8,7 @@ import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class ArticleCardPage extends HookConsumerWidget {
-  static String get routeName => 'article_card';
+  static String get routeName => 'article_card_edit';
   final Map<String, dynamic>? data;
 
   const ArticleCardPage({super.key, this.data});
@@ -38,12 +38,12 @@ class ArticleCardPage extends HookConsumerWidget {
               itemBuilder: (context, index) {
                 final asset = selectedImages[index];
                 final currentText = imageTexts[asset.id] ?? "";
+                print('rlog :: index : $index, currentText : $currentText, asset.id : ${asset.id}');
                 final hasText = currentText.isNotEmpty;
 
                 return _KeepAlivePage(
                   child: Column(
                     children: [
-                      // ✅ [조정] 상단 바와 카드뉴스 사이의 간격을 100으로 늘려 시원하게 배치
                       const SizedBox(height: 100),
 
                       // [카드뉴스 캔버스]
@@ -160,7 +160,13 @@ class ArticleCardPage extends HookConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        //Todo 완료시 동작 만들기
+                        // imageTextProvider
+                        print('rlog :: 완료 버튼 작동');
+                        
+
+                      },
                       child: const Text(
                         "완료",
                         style: TextStyle(
