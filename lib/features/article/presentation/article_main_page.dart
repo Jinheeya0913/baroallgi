@@ -23,8 +23,8 @@ class ArticleMainPage extends HookConsumerWidget {
     final selectedCategory = useState('finance');
     final titleController = useTextEditingController();
     final summaryController = useTextEditingController();
-    final selectedIndex = useState(0); // 0: 카드뉴스, 1: 게시글
-    final isSelected = [selectedIndex.value == 0, selectedIndex.value == 1];
+    final selectedType = useState(0); // 0: 카드뉴스, 1 : 게시글, 2 : 풀이미지
+    final isSelected = [selectedType.value == 0, selectedType.value == 1, selectedType.value == 2];
     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     final category = selectedCategory.value;
@@ -42,13 +42,20 @@ class ArticleMainPage extends HookConsumerWidget {
           : BaseFloatingButton(
               label: '다음 단계로',
               onPressed: () {
+                late ArticleType articleType;
+                
+                if(selectedType.value == 0) {
+                  articleType = ArticleType.CARD;
+                } else if (selectedType.value == 1) {
+                  articleType = ArticleType.POST;
+                } else {
+                  articleType = ArticleType.FULLIMG;
+                }
                 final articleMain = ArticleModel(
                   title: titleController.text,
                   authorId: authorId,
                   authorName: authorName,
-                  articleType: selectedIndex.value == 0
-                      ? ArticleType.CARD
-                      : ArticleType.POST,
+                  articleType: articleType,
                   category: category,
                   summary: summary,
                   isPublished: false,
@@ -98,7 +105,7 @@ class ArticleMainPage extends HookConsumerWidget {
                 return ToggleButtons(
                   // constraints를 사용하여 가로 길이를 꽉 채움
                   constraints: BoxConstraints.expand(
-                    width: (constraints.maxWidth - 4) / 2, // 테두리 두께 고려
+                    width: (constraints.maxWidth - 4) / 3, // 테두리 두께 고려
                     height: 50,
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -106,10 +113,11 @@ class ArticleMainPage extends HookConsumerWidget {
                   fillColor: AppColors.primaryBlue,
                   color: Colors.black54,
                   isSelected: isSelected,
-                  onPressed: (index) => selectedIndex.value = index,
+                  onPressed: (index) => selectedType.value = index,
                   children: const [
                     Text('카드', style: TextStyle(fontWeight: FontWeight.bold)),
                     Text('게시글', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('풀이미지', style: TextStyle(fontWeight: FontWeight.bold))
                   ],
                 );
               },

@@ -1,5 +1,5 @@
 enum ArticleType {
-  NEWS,
+  FULLIMG,
   POST,
   CARD,
 }
