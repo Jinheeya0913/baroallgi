@@ -1,16 +1,10 @@
 import 'package:baroallgi/core/const/const_code.dart';
-import 'package:baroallgi/core/provider/firebase_provider.dart';
 import 'package:baroallgi/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository.dart';
 import 'package:baroallgi/features/auth/models/auth_model.dart';
 import 'package:baroallgi/features/auth/models/user_model.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) {
-  return AuthRepositoryImpl(ref.watch(authDataSourceProvider));
-});
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _dataSource;

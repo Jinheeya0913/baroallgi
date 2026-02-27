@@ -236,7 +236,7 @@ class LoginPage extends HookConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
             BaseSnackBar(content: Text('${result.resultMsg}')));
       } else {
-        ref.read(storageProvider).write(key: 'useAutoLogin', value: 'true');
+        ref.read(secureStorageProvider).write(key: 'useAutoLogin', value: 'true');
       }
     } else {
       // 로그인 실패

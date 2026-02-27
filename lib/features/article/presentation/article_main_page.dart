@@ -24,7 +24,11 @@ class ArticleMainPage extends HookConsumerWidget {
     final titleController = useTextEditingController();
     final summaryController = useTextEditingController();
     final selectedType = useState(0); // 0: 카드뉴스, 1 : 게시글, 2 : 풀이미지
-    final isSelected = [selectedType.value == 0, selectedType.value == 1, selectedType.value == 2];
+    final isSelected = [
+      selectedType.value == 0,
+      selectedType.value == 1,
+      selectedType.value == 2,
+    ];
     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     final category = selectedCategory.value;
@@ -43,14 +47,15 @@ class ArticleMainPage extends HookConsumerWidget {
               label: '다음 단계로',
               onPressed: () {
                 late ArticleType articleType;
-                
-                if(selectedType.value == 0) {
+
+                if (selectedType.value == 0) {
                   articleType = ArticleType.CARD;
                 } else if (selectedType.value == 1) {
                   articleType = ArticleType.POST;
                 } else {
                   articleType = ArticleType.FULLIMG;
                 }
+
                 final articleMain = ArticleModel(
                   title: titleController.text,
                   authorId: authorId,
@@ -71,7 +76,7 @@ class ArticleMainPage extends HookConsumerWidget {
                     context,
                   ).showSnackBar(BaseSnackBar(content: Text(validResultMsg)));
                 } else {
-                  _goImagePickerPage(context, articleMain);
+                  _goNextPage(context, articleMain);
                 }
               },
             ),
@@ -117,7 +122,7 @@ class ArticleMainPage extends HookConsumerWidget {
                   children: const [
                     Text('카드', style: TextStyle(fontWeight: FontWeight.bold)),
                     Text('게시글', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('풀이미지', style: TextStyle(fontWeight: FontWeight.bold))
+                    Text('풀이미지', style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 );
               },
@@ -239,13 +244,32 @@ class ArticleMainPage extends HookConsumerWidget {
     );
   }
 
-  void _goImagePickerPage(BuildContext context, ArticleModel articleMain) {
+  void _goNextPage(BuildContext context, ArticleModel articleMain) {
+    // 다음 페이지
+    late String nextPath;
+
+    // 다음 => 이후 페이지
+    late String nextRoute;
+    String? pageTitle;
+
+    if (articleMain.articleType == ArticleType.CARD) {
+      nextPath = 'image_picker';
+      nextRoute = 'article_card_edit';
+      pageTitle = '카드사진 선택';
+    } else if (articleMain.articleType == ArticleType.FULLIMG) {
+      nextPath = 'image_picker';
+      nextRoute = 'article_fullImg_edit';
+      pageTitle = '사진 선택';
+    } else {
+      nextPath = 'article_detail';
+    }
+
     context.pushNamed(
-      'image_picker',
+      nextPath,
       extra: {
         'articleMain': articleMain.toJson(),
-        'nextRoute': 'article_card',
-        'pageTitle': '카드 사진 선택',
+        'nextRoute': nextRoute,
+        'pageTitle': pageTitle,
       },
     );
   }

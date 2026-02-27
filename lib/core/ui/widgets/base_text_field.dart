@@ -78,39 +78,40 @@ class BaseTextField extends HookWidget {
   Widget build(BuildContext context) {
     final internalFocusNode = focusNode ?? useFocusNode();
 
-    useEffect(() {
-      void listener() {
-        if (internalFocusNode.hasFocus) {
-          final scrollable = Scrollable.of(internalFocusNode.context!);
-          if (internalFocusNode.context != null) {
-            if (scrollToBottom) {
-              print('rlog :: 스크롤 최하단으로!');
-              Future.delayed(const Duration(milliseconds: 500), () {
-                scrollable.position.animateTo(
-                  scrollable.position.maxScrollExtent,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOut,
-                );
-              });
-
-            } else {
-              print('rlog :: 스크롤 최하단 안가네?!');
-              Future.delayed(const Duration(milliseconds: 300), () {
-                Scrollable.ensureVisible(
-                  internalFocusNode.context!,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  alignment: 2.0,
-                );
-              });
-            }
-          }
-        }
-      }
-
-      internalFocusNode.addListener(listener);
-      return () => internalFocusNode.removeListener(listener);
-    }, [internalFocusNode,scrollToBottom]);
+    // useEffect(() {
+    //   void listener() {
+    //     if (internalFocusNode.hasFocus) {
+    //       final scrollable = Scrollable.of(internalFocusNode.context!);
+    //       if (internalFocusNode.context != null) {
+    //         if (scrollToBottom) {
+    //           // 스크롤 최하단으로
+    //           Future.delayed(const Duration(milliseconds: 500), () {
+    //             print('rlog :: 최하단 이동1');
+    //             scrollable.position.animateTo(
+    //               scrollable.position.maxScrollExtent,
+    //               duration: const Duration(milliseconds: 500),
+    //               curve: Curves.easeOut,
+    //             );
+    //           });
+    //
+    //         } else {
+    //           Future.delayed(const Duration(milliseconds: 300), () {
+    //             print('rlog :: 최하단 이동2');
+    //             Scrollable.ensureVisible(
+    //               internalFocusNode.context!,
+    //               duration: const Duration(milliseconds: 300),
+    //               curve: Curves.easeInOut,
+    //               alignment: 2.0,
+    //             );
+    //           });
+    //         }
+    //       }
+    //     }
+    //   }
+    //
+    //   internalFocusNode.addListener(listener);
+    //   return () => internalFocusNode.removeListener(listener);
+    // }, [internalFocusNode,scrollToBottom]);
 
     final baseBorder = OutlineInputBorder(
       borderSide: BorderSide(color: borderColor, width: borderWidth),

@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:baroallgi/core/provider/select_image_provider.dart';
 import 'package:baroallgi/core/ui/widgets/base_edit_sheet.dart';
+import 'package:baroallgi/features/article/data/repositories/article_repository_impl.dart';
+import 'package:baroallgi/features/article/models/article_card_model.dart';
+import 'package:baroallgi/features/article/models/article_model.dart';
+import 'package:baroallgi/features/article/provider/article_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,16 +13,17 @@ import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class ArticleCardPage extends HookConsumerWidget {
+class ArticleCardEditPage extends HookConsumerWidget {
   static String get routeName => 'article_card_edit';
-  final Map<String, dynamic>? data;
+  final Map<String, dynamic> data;
 
-  const ArticleCardPage({super.key, this.data});
+  const ArticleCardEditPage({super.key, required this.data});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedImages = ref.watch(selectImageProvider);
     final imageTexts = ref.watch(imageTextProvider);
+    final articleRepository = ref.watch(articleRepositoryProvider);
     final pageController = usePageController();
     final currentPage = useState(1);
 
@@ -38,7 +45,6 @@ class ArticleCardPage extends HookConsumerWidget {
               itemBuilder: (context, index) {
                 final asset = selectedImages[index];
                 final currentText = imageTexts[asset.id] ?? "";
-                print('rlog :: index : $index, currentText : $currentText, asset.id : ${asset.id}');
                 final hasText = currentText.isNotEmpty;
 
                 return _KeepAlivePage(
@@ -160,12 +166,34 @@ class ArticleCardPage extends HookConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
-                        //Todo 완료시 동작 만들기
-                        // imageTextProvider
-                        print('rlog :: 완료 버튼 작동');
-                        
+                      onPressed: () async {
 
+
+                        print('rlog :: 완료 버튼 작동');
+                        List<CardDataModel> cardDataList = [];
+
+                        for (int i = 0; i < selectedImages.length; i++) {
+                          final asset = selectedImages[i];
+                          final currentText = imageTexts[asset.id] ?? "";
+                          File? file = await asset.file;
+
+                          cardDataList.add(
+                            CardDataModel(file: file!, caption: currentText),
+                          );
+                        }
+
+                        final articleMain = ArticleModel.fromJson(data);
+
+                        print('rlog :: articleMain : ${articleMain.toJson()}');
+                        print('rlog :: cardList : ${cardDataList.length}');
+
+                        final result = await articleRepository.saveArticleCard(
+                          mainInfo: articleMain,
+                          cardDataList: cardDataList,
+                        );
+
+                        print('rlog :: result : ${result}');
+                        // Todo 완료 이후 로직 만들기
                       },
                       child: const Text(
                         "완료",

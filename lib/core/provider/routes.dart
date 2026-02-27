@@ -27,8 +27,7 @@ List<GoRoute> _routes = [
     name: 'image_picker',
     builder: (context, state) {
       final data = state.extra as Map<String, dynamic>;
-
-      print('rlog :: articleMain :: ${data['articleMain']}');
+      print('rlog :: image_picker > data : ${data}');
       return ImagePickerPage(
         pageTitle: data['pageTitle'],
         nextRoute: data['nextRoute'],
@@ -62,7 +61,7 @@ List<GoRoute> _routes = [
         builder: (context, state) {
           final data = state.extra as Map<String,dynamic>;
           print('rlog :: article_card_edit > data : ${data}');
-          return ArticleCardPage(
+          return ArticleCardEditPage(
             data: data,
           );
         },

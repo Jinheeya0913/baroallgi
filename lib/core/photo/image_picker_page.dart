@@ -12,11 +12,13 @@ import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 class ImagePickerPage extends HookConsumerWidget {
   static String get routeName => 'image_picker';
   final String nextRoute;
+  final String? pageTitle;
   final Map<String,dynamic>? data;
 
   const ImagePickerPage({
     super.key,
     required this.nextRoute,
+    this.pageTitle,
     this.data,
   }); // 임시로 반드시 cardName으로 향하게 지정
 
@@ -76,7 +78,7 @@ class ImagePickerPage extends HookConsumerWidget {
     }
 
     return DefaultLayout(
-      title: const Text("사진 선택", style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text('$pageTitle', style: const TextStyle(fontWeight: FontWeight.bold)),
       padding: EdgeInsets.only(bottom: 80),
       // 맨 아랫줄 사진이 잘 보이도록 패딩 조정
       useBackBtn: false,
@@ -184,9 +186,7 @@ class ImagePickerPage extends HookConsumerWidget {
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
         child: FloatingActionButton.extended(
-          onPressed: () {
-            context.pushNamed('articleCard');
-          },
+          onPressed: () => _pushNextPage(context),
           label: Text(
             "${selected.length}장 선택",
             style: TextStyle(color: Colors.white),
@@ -204,5 +204,12 @@ class ImagePickerPage extends HookConsumerWidget {
         ),
       );
     }
+  }
+
+  void _pushNextPage(BuildContext context) {
+    context.pushNamed(
+      nextRoute,
+      extra: data,
+    );
   }
 }

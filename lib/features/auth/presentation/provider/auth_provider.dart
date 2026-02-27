@@ -1,4 +1,5 @@
 import 'package:baroallgi/core/const/const_code.dart';
+import 'package:baroallgi/core/provider/firebase_provider.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository_impl.dart';
@@ -13,8 +14,12 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthModel?>((
 ) {
   return AuthNotifier(
     ref.watch(authRepositoryProvider),
-    ref.watch(storageProvider),
+    ref.watch(secureStorageProvider),
   );
+});
+
+final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) {
+  return AuthRepositoryImpl(ref.watch(authDataSourceProvider));
 });
 
 class AuthNotifier extends StateNotifier<AuthModel?> {
