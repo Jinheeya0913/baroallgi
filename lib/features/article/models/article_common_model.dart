@@ -14,7 +14,7 @@ abstract class ArticleCommonModel {
       case ArticleType.CARD:
         return ArticleCardModel.fromJson(json);
       case ArticleType.POST:
-      case ArticleType.NEWS:
+      case ArticleType.FULLIMG:
         return ArticlePostModel.fromJson(json);
     }
   }
