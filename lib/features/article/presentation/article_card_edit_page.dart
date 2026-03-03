@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:baroallgi/core/provider/select_image_provider.dart';
 import 'package:baroallgi/core/ui/widgets/base_edit_sheet.dart';
+import 'package:baroallgi/core/ui/widgets/base_snack_bar.dart';
 import 'package:baroallgi/features/article/data/repositories/article_repository_impl.dart';
 import 'package:baroallgi/features/article/models/article_card_model.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
 import 'package:baroallgi/features/article/provider/article_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
@@ -167,8 +169,6 @@ class ArticleCardEditPage extends HookConsumerWidget {
                     ),
                     TextButton(
                       onPressed: () async {
-
-
                         print('rlog :: 완료 버튼 작동');
                         List<CardDataModel> cardDataList = [];
 
@@ -192,8 +192,18 @@ class ArticleCardEditPage extends HookConsumerWidget {
                           cardDataList: cardDataList,
                         );
 
-                        print('rlog :: result : ${result}');
                         // Todo 완료 이후 로직 만들기
+
+                        if (result.isSuccess) {
+                          print('rlog :: 완료');
+                          context.pushNamed(
+                            'article_card_view',
+                            extra: result.data as Map<String, dynamic>,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              BaseSnackBar(content: Text('${result.resultMsg}')));
+                        }
                       },
                       child: const Text(
                         "완료",

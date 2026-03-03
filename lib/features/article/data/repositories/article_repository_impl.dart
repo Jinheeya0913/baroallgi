@@ -79,14 +79,20 @@ class ArticleRepositoryImpl implements ArticleRepository {
       final resultMain = mainInfo.copyWith(id: articleId, thumbnailUrl: thumbnailUrl);
       final resultDetail = ArticleCardModel(articleId: articleId, cards: cardList);
 
-      // 🚀 Firestore Batch 실행
+      // 성공적으로 저장되면 view page로 이동하기 위한 map
+      final resultMap = {
+        'main': resultMain.toJson(),
+        'detail': resultDetail.toJson(),
+      };
+
+
+      // Firestore Batch 실행
       await _datasource.saveArticleBatch(
-        mainInfo: resultMain,
+        mainInfo : resultMain,
         detailInfo: resultDetail,
       );
 
-      // 성공 시 생성된 ID를 data에 담아 반환 (이동 로직에 활용)
-      return BaseResponse.successResult(data: articleId);
+      return BaseResponse.successResult(data: resultMap);
 
     } catch (e) {
       // DB 저장 실패 시 스토리지 롤백
@@ -94,7 +100,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
       // if (isUploaded) {
       //   await _storage.deleteFolder(filePath: 'articles/$articleId');
       // }
-      return BaseResponse.failResult(resultMsg: '데이터베이스 저장에 실패하였습니다.');
+      return BaseResponse.failResult(resultMsg: '저장 실패하였습니다. 관리자에게 문의 바랍니다.');
     }
   }
 }
