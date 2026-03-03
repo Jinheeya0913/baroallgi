@@ -3,3 +3,8 @@ enum ArticleType {
   POST,
   CARD,
 }
+
+enum ArticleSelectType {
+  TITLE,
+  AUTHOR,
+}

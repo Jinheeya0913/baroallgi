@@ -1,7 +1,7 @@
 import 'package:baroallgi/features/article/models/article_card_model.dart';
 import 'package:baroallgi/features/article/models/article_post_model.dart';
 import 'package:baroallgi/features/article/models/article_reference_model.dart';
-import 'package:baroallgi/features/article/models/article_type_enum.dart';
+import 'package:baroallgi/core/enum/article_type_enum.dart';
 
 abstract class ArticleCommonModel {
   final String articleId;

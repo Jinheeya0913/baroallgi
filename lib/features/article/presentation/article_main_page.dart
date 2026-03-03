@@ -4,7 +4,7 @@ import 'package:baroallgi/core/ui/widgets/base_floating_btn.dart';
 import 'package:baroallgi/core/ui/widgets/base_snack_bar.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
-import 'package:baroallgi/features/article/models/article_type_enum.dart';
+import 'package:baroallgi/core/enum/article_type_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -254,7 +254,7 @@ class ArticleMainPage extends HookConsumerWidget {
 
     if (articleMain.articleType == ArticleType.CARD) {
       nextPath = 'image_picker';
-      nextRoute = 'article_card_edit';
+      nextRoute = 'rticle_card_edit';
       pageTitle = '카드사진 선택';
     } else if (articleMain.articleType == ArticleType.FULLIMG) {
       nextPath = 'image_picker';

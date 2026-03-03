@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:baroallgi/core/const/const_code.dart';
 import 'package:baroallgi/core/network/models/base_response.dart';
+import 'package:baroallgi/core/network/models/paginated_response.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
 import 'package:baroallgi/features/article/data/datasources/article_remote_datasource.dart';
 import 'package:baroallgi/features/article/data/repositories/article_repository.dart';
 import 'package:baroallgi/features/article/models/article_card_model.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
+import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final ArticleDatasource _datasource;
@@ -52,14 +55,20 @@ class ArticleRepositoryImpl implements ArticleRepository {
       );
     }
 
-    uploadedUrls = ['https://firebasestorage.googleapis.com/v0/b/baroallgi-2086b.firebasestorage.app/o/articles%2FUUN9fBuw6FSshwx3toeN%2Fimage_CARD_UUN9fBuw6FSshwx3toeN_0.jpg?alt=media&token=08cfefe4-7163-4b25-8835-c37c818dcb91', 'https://firebasestorage.googleapis.com/v0/b/baroallgi-2086b.firebasestorage.app/o/articles%2FUUN9fBuw6FSshwx3toeN%2Fimage_CARD_UUN9fBuw6FSshwx3toeN_1.jpg?alt=media&token=aa30d127-657f-4b48-999d-739664d38d67', 'https://firebasestorage.googleapis.com/v0/b/baroallgi-2086b.firebasestorage.app/o/articles%2FUUN9fBuw6FSshwx3toeN%2Fimage_CARD_UUN9fBuw6FSshwx3toeN_2.jpg?alt=media&token=268848b0-f14a-4e9a-9098-1b6427bddac1'];
+    uploadedUrls = [
+      'https://firebasestorage.googleapis.com/v0/b/baroallgi-2086b.firebasestorage.app/o/articles%2FUUN9fBuw6FSshwx3toeN%2Fimage_CARD_UUN9fBuw6FSshwx3toeN_0.jpg?alt=media&token=08cfefe4-7163-4b25-8835-c37c818dcb91',
+      'https://firebasestorage.googleapis.com/v0/b/baroallgi-2086b.firebasestorage.app/o/articles%2FUUN9fBuw6FSshwx3toeN%2Fimage_CARD_UUN9fBuw6FSshwx3toeN_1.jpg?alt=media&token=aa30d127-657f-4b48-999d-739664d38d67',
+      'https://firebasestorage.googleapis.com/v0/b/baroallgi-2086b.firebasestorage.app/o/articles%2FUUN9fBuw6FSshwx3toeN%2Fimage_CARD_UUN9fBuw6FSshwx3toeN_2.jpg?alt=media&token=268848b0-f14a-4e9a-9098-1b6427bddac1',
+    ];
     print('rlog :: uploadedUrls : ${uploadedUrls}');
-    
+
     // 2. DB 저장 수행
     try {
       // 썸네일 결정 로직
       String? thumbnailUrl;
-      if (thumbnailIndex != null && thumbnailIndex >= 0 && thumbnailIndex < uploadedUrls.length) {
+      if (thumbnailIndex != null &&
+          thumbnailIndex >= 0 &&
+          thumbnailIndex < uploadedUrls.length) {
         thumbnailUrl = uploadedUrls[thumbnailIndex];
       } else {
         thumbnailUrl = uploadedUrls.firstOrNull;
@@ -67,7 +76,9 @@ class ArticleRepositoryImpl implements ArticleRepository {
 
       // 카드 데이터 가공
       final cardList = List.generate(uploadedUrls.length, (i) {
-        print('rlog :: order : ${i}, imageUrl : ${uploadedUrls[i]}, catpion : ${cardDataList[i].caption}');
+        print(
+          'rlog :: order : ${i}, imageUrl : ${uploadedUrls[i]}, catpion : ${cardDataList[i].caption}',
+        );
         return CardItem(
           order: i,
           imageUrl: uploadedUrls[i],
@@ -75,9 +86,15 @@ class ArticleRepositoryImpl implements ArticleRepository {
         );
       });
 
-      
-      final resultMain = mainInfo.copyWith(id: articleId, thumbnailUrl: thumbnailUrl);
-      final resultDetail = ArticleCardModel(articleId: articleId, cards: cardList);
+      final resultMain = mainInfo.copyWith(
+        id: articleId,
+        thumbnailUrl: thumbnailUrl,
+        createdAt: DateTime.now(),
+      );
+      final resultDetail = ArticleCardModel(
+        articleId: articleId,
+        cards: cardList,
+      );
 
       // 성공적으로 저장되면 view page로 이동하기 위한 map
       final resultMap = {
@@ -85,15 +102,13 @@ class ArticleRepositoryImpl implements ArticleRepository {
         'detail': resultDetail.toJson(),
       };
 
-
       // Firestore Batch 실행
       await _datasource.saveArticleBatch(
-        mainInfo : resultMain,
+        mainInfo: resultMain,
         detailInfo: resultDetail,
       );
 
       return BaseResponse.successResult(data: resultMap);
-
     } catch (e) {
       // DB 저장 실패 시 스토리지 롤백
       print('rlog :: e :: ${e}');
@@ -101,6 +116,36 @@ class ArticleRepositoryImpl implements ArticleRepository {
       //   await _storage.deleteFolder(filePath: 'articles/$articleId');
       // }
       return BaseResponse.failResult(resultMsg: '저장 실패하였습니다. 관리자에게 문의 바랍니다.');
+    }
+  }
+
+  @override
+  Future<PaginatedResponse?> getArticleList({
+    String? keyword,
+    ArticleSelectType? selectType,
+    DocumentSnapshot? lastDocument,
+  }) async {
+    try {
+      final snapshot = await _datasource.selectArticleList(
+        keyword: keyword,
+        selectType: selectType,
+        lastDocument: lastDocument,
+      );
+
+      final list = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return ArticleModel.fromJson({...data, 'id': doc.id});
+      }).toList();
+
+      final response = PaginatedResponse(
+        items: list,
+        lastDoc: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
+      );
+
+      print('rlog :: 조회 결과 : ${list.length}');
+      return response;
+    } catch (e) {
+      return null;
     }
   }
 }

@@ -1,5 +1,5 @@
 // 1. 메타데이터 모델 (리스트용)
-import 'package:baroallgi/features/article/models/article_type_enum.dart';
+import 'package:baroallgi/core/enum/article_type_enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'article_model.g.dart';
