@@ -40,4 +40,11 @@ class AppColors {
 
   // --- [그라데이션 조합] ---
   static const List<Color> navyGradient = [primaryNavy, primaryBlue];
+
+  // 구분별 색상
+
+  static const Color fiance = Colors.blue;
+  static const Color health = Colors.green;
+  static const Color ad = Colors.orange;
+  static const Color rumor = Colors.purple;
 }

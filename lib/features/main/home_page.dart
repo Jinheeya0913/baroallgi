@@ -1,3 +1,4 @@
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/app_logo_img.dart';
@@ -9,7 +10,6 @@ class HomePage extends HookConsumerWidget {
   static String get routeName => 'main';
 
   const HomePage({super.key});
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,9 +31,14 @@ class HomePage extends HookConsumerWidget {
           children: [
             Card(
               color: Colors.red.shade50, // 긴급함 강조를 위해 연한 빨간색 권장
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 child: Row(
                   children: [
                     const Icon(Icons.error_outline, color: Colors.redAccent),
@@ -54,30 +59,30 @@ class HomePage extends HookConsumerWidget {
             ),
             _buildHotPickSlider(),
             _buildReportCard(context),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             _buildMenuCard(
               '💰 금융사기',
               '보이스피싱, 스미싱 수법 정리',
               Icons.monetization_on,
-              Colors.blue,
+              AppColors.fiance,
             ),
             _buildMenuCard(
               '의학 정보 바로잡기',
               '민간요법과 가짜 의학 지식 검증',
               Icons.medical_services_rounded,
-              Colors.green,
+              AppColors.health,
             ),
             _buildMenuCard(
               '허위·과대 광고 주의보',
               '속기 쉬운 SNS 쇼핑 광고의 진실',
               Icons.ad_units_rounded,
-              Colors.orange,
+              AppColors.ad,
             ),
             _buildMenuCard(
               '단톡방 찌라시 검증',
               'SNS 루머와 유언비어 진위 판정',
               Icons.forum_rounded,
-              Colors.purple,
+              AppColors.rumor,
             ),
 
             SizedBox(
@@ -218,10 +223,7 @@ class HomePage extends HookConsumerWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.8),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
                 ),
               ),
               padding: const EdgeInsets.all(20.0),
@@ -230,14 +232,21 @@ class HomePage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.redAccent,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       item['tag']!,
-                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -284,10 +293,13 @@ class HomePage extends HookConsumerWidget {
           onTap: () {
             // 제보하기 페이지로 이동 로직
             print("제보하기 클릭됨");
-      },
-        borderRadius: BorderRadius.circular(20.0),
+          },
+          borderRadius: BorderRadius.circular(20.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 24.0,
+              horizontal: 20.0,
+            ),
             child: Row(
               children: [
                 // 반짝이는 효과를 주는 배경 위의 아이콘
@@ -297,7 +309,11 @@ class HomePage extends HookConsumerWidget {
                     color: Colors.white.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.campaign_rounded, color: Colors.white, size: 32),
+                  child: const Icon(
+                    Icons.campaign_rounded,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 const Expanded(
@@ -324,7 +340,11 @@ class HomePage extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 20),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white54,
+                  size: 20,
+                ),
               ],
             ),
           ),
@@ -334,11 +354,10 @@ class HomePage extends HookConsumerWidget {
   }
 
   Widget _title() {
-
-    return AppLogoImg(isHorizontal: true, width: 150,);
+    return AppLogoImg(isHorizontal: true, width: 150);
   }
 
-  Widget _buildFloatButtons(){
+  Widget _buildFloatButtons() {
     return SpeedDial(
       animatedIcon: AnimatedIcons.menu_close,
       animatedIconTheme: const IconThemeData(size: 22.0),
@@ -347,16 +366,16 @@ class HomePage extends HookConsumerWidget {
       spacing: 10,
       children: [
         SpeedDialChild(
-          child: Icon(Icons.create,),
-          onTap: (){},
+          child: Icon(Icons.create),
+          onTap: () {},
           backgroundColor: Colors.white,
-          label: '카드뉴스 작성하기'
+          label: '카드뉴스 작성하기',
         ),
         SpeedDialChild(
-            child: Icon(Icons.image,),
-            onTap: (){},
-            backgroundColor: Colors.blue,
-            label: 'open image'
+          child: Icon(Icons.image),
+          onTap: () {},
+          backgroundColor: Colors.blue,
+          label: 'open image',
         ),
       ],
     );
