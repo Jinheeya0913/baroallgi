@@ -56,9 +56,15 @@ class ArticleDatasource {
         case ArticleSelectType.AUTHOR:
           field = 'authorName';
           break;
+        case ArticleSelectType.CATEGORY:
+          field = 'category';
         default:
           field = 'title';
       }
+      
+      print('rlog :: keyword : ${keyword},  field : ${field}');
+
+
       query = query
           .where(field, isGreaterThanOrEqualTo: keyword)
           .where(field, isLessThan: '${keyword}\uf8ff')

@@ -7,4 +7,5 @@ enum ArticleType {
 enum ArticleSelectType {
   TITLE,
   AUTHOR,
+  CATEGORY,
 }

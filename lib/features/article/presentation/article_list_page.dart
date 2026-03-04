@@ -1,4 +1,7 @@
+import 'package:baroallgi/core/const/app_metadata.dart';
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/article/provider/article_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +18,7 @@ class ArticleListPage extends HookConsumerWidget {
     // 1. ArticleProvider 감시
     final provider = ref.watch(articleNotifier);
     final scrollController = useScrollController();
+    final selectedCategory = useState<String?>(null);
 
     // 2. 페이지 진입 시 최초 데이터 로드
     useEffect(() {
@@ -34,6 +38,7 @@ class ArticleListPage extends HookConsumerWidget {
           provider.fetchArticles();
         }
       }
+
       scrollController.addListener(scrollListener);
       return () => scrollController.removeListener(scrollListener);
     }, [scrollController]);
@@ -42,31 +47,59 @@ class ArticleListPage extends HookConsumerWidget {
       useAppBar: false,
       child: Column(
         children: [
+
           // 검색바 (필요 시 provider.reset()과 연동)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: '검색어를 입력하세요',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+          BaseTextField(
+            hintText: '검색어를 입력하세요',
+            onFieldSubmitted: (value){
+              provider.reset();
+              provider.fetchArticles(
+                keyword: value,
+                selectType: ArticleSelectType.TITLE,
+              );
+            },
+          ),
+
+          // 2. 카테고리 필터 (가로 스크롤 칩)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                // '전체' 버튼
+                _CategoryChip(
+                  label: '전체',
+                  isSelected: selectedCategory.value == null,
+                  onTap: () {
+                    selectedCategory.value = null;
+                    provider.reset();
+                    provider.fetchArticles(keyword: selectedCategory.value, selectType: ArticleSelectType.CATEGORY);
+                  },
                 ),
-              ),
-              onSubmitted: (value) {
-                provider.reset();
-                provider.fetchArticles(
-                  keyword: value,
-                  selectType: ArticleSelectType.TITLE,
-                );
-              },
+                // AppMetadata에서 가져온 카테고리들
+                ...AppMetadata.reportCategories.map((cat) {
+                  final categoryName = cat['name'] as String;
+                  final categoryId = cat['id'] as String;
+                  return _CategoryChip(
+                    label: categoryName,
+                    isSelected: selectedCategory.value == categoryId,
+                    onTap: () {
+                      selectedCategory.value = categoryId;
+                      provider.reset();
+                      provider.fetchArticles(
+                        keyword: categoryId,
+                        selectType: ArticleSelectType.CATEGORY, // CATEGORY 타입 사용
+                      );
+                    },
+                  );
+                }).toList(),
+              ],
             ),
           ),
 
+
           // 리스트 영역
-          Expanded(
-            child: _buildListBody(provider, scrollController, ref),
-          ),
+          Expanded(child: _buildListBody(provider, scrollController, ref)),
         ],
       ),
     );
@@ -107,7 +140,10 @@ class ArticleListPage extends HookConsumerWidget {
 
           final article = provider.articles[index];
           return ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: article.thumbnailUrl != null
@@ -134,6 +170,46 @@ class ArticleListPage extends HookConsumerWidget {
             },
           );
         },
+      ),
+    );
+  }
+
+
+}
+
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CategoryChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryNavy : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryNavy : AppColors.divider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : AppColors.textSecondary,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }
