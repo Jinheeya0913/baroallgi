@@ -1,5 +1,7 @@
 import 'package:baroallgi/core/const/const_color.dart';
+import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
+import 'package:baroallgi/core/ui/widgets/base_elevated_button.dart';
 import 'package:baroallgi/core/ui/widgets/base_floating_btn.dart';
 import 'package:baroallgi/core/ui/widgets/base_snack_bar.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
@@ -23,20 +25,32 @@ class ArticleMainPage extends HookConsumerWidget {
     final selectedCategory = useState('finance');
     final titleController = useTextEditingController();
     final summaryController = useTextEditingController();
+    final tagController = useTextEditingController(); // 태그 입력용 컨트롤러
+    final tags = useState<List<String>>([]); // 실시간 태그 리스트 상태
     final selectedType = useState(0); // 0: 카드뉴스, 1 : 게시글, 2 : 풀이미지
     final isSelected = [
       selectedType.value == 0,
       selectedType.value == 1,
       selectedType.value == 2,
     ];
+
     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     final category = selectedCategory.value;
     final summary = summaryController.text;
 
-    // 임시로 ID는 authorId와 Name은 하드코딩
+    // Todo 임시로 ID는 authorId와 Name은 하드코딩
     final authorId = 'BVE8aeEqXcamjtWNb7pFLgvQGFW2';
     final authorName = 'testName';
+
+    // 태그 추가 로직 공통화
+    void addTag() {
+      final text = tagController.text.trim();
+      if (text.isNotEmpty && !tags.value.contains(text)) {
+        tags.value = [...tags.value, text];
+        tagController.clear();
+      }
+    }
 
     return DefaultLayout(
       resiseWithKeyboard: true,
@@ -131,6 +145,7 @@ class ArticleMainPage extends HookConsumerWidget {
             _buildSectionTitle('3. 분야'),
             const SizedBox(height: 12),
             _buildCategoryDropdown(selectedCategory),
+
             const SizedBox(height: 32),
 
             // 5. 전문가 한 줄 요약
@@ -143,28 +158,79 @@ class ArticleMainPage extends HookConsumerWidget {
               hintText: '이 정보에 대해 전문가로서 내리는 핵심 결론을 적어주세요.',
             ),
 
-            SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 50),
+            const SizedBox(height: 32),
 
-            /*// 다음 단계 버튼
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+            _buildSectionTitle('5. 태그'),
+
+            // 실시간 태그 표시 영역
+            // 실시간 태그 표시 영역
+            if (tags.value.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.subColorGhost,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                onPressed: () {
-                  // Step 2로 이동 로직
-                },
-                child: const Text(
-                  '다음 단계로 (본문 작성)',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: tags.value.map((tag) {
+                    return Chip(
+                      label: Text(
+                        tag,
+                        style: const TextStyle(
+                          fontSize: CNST_FONT_SIZE_NORMAL,
+                          color: Colors.white,
+                        ),
+                      ),
+                      backgroundColor: AppColors.primaryNavy,
+                      deleteIcon: const Icon(
+                        Icons.close,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                      onDeleted: () {
+                        tags.value = tags.value.where((t) => t != tag).toList();
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      side: BorderSide.none,
+                    );
+                  }).toList(),
                 ),
               ),
-            ),*/
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: BaseTextField(
+                    controller: tagController,
+                    hintText: '태그 입력 후 + 버튼 터치',
+                    onFieldSubmitted: (_) => addTag(),
+                  ),
+                ),
+                const SizedBox(width: CNST_SIZE_NORMAL),
+                SizedBox(
+                  width: CNST_SIZE_40,
+                  child: BaseElevatedButton(
+                    height: 40,
+                    text: '+',
+                    onPressed: addTag,
+                    gradientColors: [AppColors.indigo, AppColors.indigo],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+
+
+            SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 80),
           ],
         ),
       ),
