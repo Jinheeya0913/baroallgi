@@ -7,7 +7,7 @@ class BaseElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData? icon;
   final List<Color>? gradientColors;
-  final double height;
+  final double? height;
   final double? width;
   final bool isLoading;
 
@@ -19,7 +19,7 @@ class BaseElevatedButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.height = 56.0, // HomePage의 카드 높이들과 밸런스를 맞춤
-    this.width,
+    this.width = double.infinity,
     this.isLoading = false,
     this.gradientColors,
   });
@@ -27,24 +27,19 @@ class BaseElevatedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // HomePage의 제보하기 카드와 동일한 기본 그라데이션 적용
-    final List<Color> defaultGradient = [
-      AppColors.primaryBlue,
-      AppColors.primaryNavy,
-    ];
-
     return Container(
-      width: width ?? double.infinity,
+      width: width,
       height: height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: gradientColors ?? defaultGradient,
+          colors: gradientColors ?? AppColors.navyGradient,
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(16.0), // HomePage 카드와 통일
         boxShadow: [
           BoxShadow(
-            color: (gradientColors?.first ?? defaultGradient.first).withOpacity(0.3),
+            color: (gradientColors?.first ?? AppColors.navyGradient.first).withOpacity(0.3),
             spreadRadius: 1,
             blurRadius: 10,
             offset: const Offset(0, 4),

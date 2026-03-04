@@ -1,12 +1,18 @@
 import 'package:baroallgi/core/photo/image_picker_page.dart';
 import 'package:baroallgi/core/provider/auth_status_provider.dart';
+import 'package:baroallgi/features/article/presentation/article_card_view_page.dart';
+import 'package:baroallgi/features/article/presentation/article_detail_page.dart';
+import 'package:baroallgi/features/article/presentation/article_fullimg_page.dart';
+import 'package:baroallgi/features/article/presentation/article_list_page.dart';
+import 'package:baroallgi/features/article/presentation/article_main_page.dart';
 import 'package:baroallgi/features/auth/presentation/login_page.dart';
 import 'package:baroallgi/features/example/test_route_page.dart';
 import 'package:baroallgi/features/main/home_page.dart';
-import 'package:baroallgi/features/report/presentation/card_edit_page.dart';
+import 'package:baroallgi/features/article/presentation/article_card_edit_page.dart';
 import 'package:baroallgi/features/report/presentation/report_page.dart';
 import 'package:baroallgi/splash_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

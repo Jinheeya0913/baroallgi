@@ -15,6 +15,10 @@ class AppColors {
   /// Sky Blue: 배경이나 강조 보조용 연한 블루
   static const Color accentBlue = Color(0xFFE0EAFC);
 
+  // --- [포인트/액션 컬러] ---
+  /// Point Amber: 친근하고 활기찬 느낌의 포인트 컬러 (추가 버튼 등)
+  static const Color pointAmber = Color(0xFFF59E0B);
+
   // --- [상태 및 알림 컬러] ---
   /// Alert Red: 긴급 알림, 사기 주의 등 경고용 (차분한 레드)
   static const Color alertRed = Color(0xFFE53935);
@@ -38,8 +42,18 @@ class AppColors {
   /// Divider: 선이나 경계선용 (매우 연한 회색)
   static const Color divider = Color(0xFFEEEEEE);
 
+  static const Color indigo = Color(0xFF6366F1);
+
   // --- [그라데이션 조합] ---
-  static const List<Color> navyGradient = [primaryNavy, primaryBlue];
+  static const List<Color> navyGradient = [primaryBlue, primaryNavy];
+
+  /// 보조 액션(추가, 취소 등)에 사용하는 세련된 Slate 그라데이션
+  static const List<Color> subGradient = [Color(0xFF475569), Color(0xFF64748B)];
+
+  /// 정감 있고 활기찬 느낌의 Amber 그라데이션
+  static const List<Color> amberGradient = [Color(0xFFF59E0B), Color(0xFFD97706)];
+
+
 
   // 구분별 색상
 

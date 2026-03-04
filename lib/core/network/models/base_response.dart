@@ -21,7 +21,7 @@ class BaseResponse<T> {
 
   factory BaseResponse.failResult({String? resultCode, String? resultMsg}) {
     return BaseResponse(
-      resultCode: resultCode ?? '99',
+      resultCode: resultCode ?? REQUEST_FAILED,
       resultMsg: resultMsg ?? '실패',
     );
   }
@@ -35,5 +35,5 @@ class BaseResponse<T> {
   Map<String, dynamic> toJson(Object? Function(T value) toJsonT) =>
       _$BaseResponseToJson(this, toJsonT);
 
-  bool get isSuccess => resultCode == '00';
+  bool get isSuccess => resultCode == REQUEST_SUCCESS;
 }
