@@ -30,7 +30,7 @@ class AppColors {
   /// Background: 눈이 편안한 미색 배경
   static const Color background = Color(0xFFF8F9FB);
 
-  /// Surface: 카드나 리스트 아이템의 배경 (순백색)
+  /// Surface: 카드나 리스트 아이템의 배경 (순백색)  
   static const Color surface = Colors.white;
 
   /// Text Primary: 기본 텍스트 (완전한 검정보다 눈이 편함)

@@ -21,19 +21,46 @@ class RouteTestPage extends StatelessWidget {
             _buildPushCard(context, 'Splash', '/splash', Icons.auto_awesome),
             _buildPushCard(context, 'Login', '/login', Icons.login),
             _buildPushCard(context, 'Main Home', '/main', Icons.home),
-            _buildPushCard(context, 'Image Picker', '/image_picker', Icons.image),
+            _buildPushCard(
+              context,
+              'Image Picker',
+              '/image_picker',
+              Icons.image,
+            ),
 
             const SizedBox(height: 24),
             _sectionTitle('Nested & Sub Routes'),
             _buildPushCard(context, 'Report Main', '/report', Icons.assessment),
-            _buildPushCard(context, 'Article Main', '/article_main', Icons.article),
-            _buildPushCard(context, 'Article Detail', '/article_main/article_detail', Icons.article),
             _buildPushCard(
-                context,
-                'Card Edit (Sub)',
-                '/article_main/article_card',
-                Icons.edit_note,
-                isSub: true
+              context,
+              'Article Main',
+              '/article_main',
+              Icons.article,
+            ),
+            _buildPushCard(
+              context,
+              'Article Detail',
+              '/article_main/article_detail',
+              Icons.article,
+            ),
+            _buildPushCard(
+              context,
+              'Card Edit (Sub)',
+              '/article_main/article_card_edit',
+              Icons.edit_note,
+              isSub: true,
+            ),
+            _buildPushCard(
+              context,
+              'Card View',
+              '/article_main/article_card_view',
+              Icons.pageview,
+            ),
+            _buildPushCard(
+              context,
+              'Article List Page',
+              '/article_main/article_list',
+              Icons.list,
             ),
           ],
         ),
@@ -52,12 +79,12 @@ class RouteTestPage extends StatelessWidget {
   }
 
   Widget _buildPushCard(
-      BuildContext context,
-      String name,
-      String path,
-      IconData icon,
-      {bool isSub = false}
-      ) {
+    BuildContext context,
+    String name,
+    String path,
+    IconData icon, {
+    bool isSub = false,
+  }) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6),
