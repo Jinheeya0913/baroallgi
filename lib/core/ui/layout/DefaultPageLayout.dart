@@ -40,9 +40,11 @@ class DefaultLayout extends HookConsumerWidget {
     return Scaffold(
       resizeToAvoidBottomInset: resiseWithKeyboard,
       appBar: useAppBar ? _buildAppBar(context) : null,
+      // deferToChild: 자식 버튼/ListTile 터치를 가로채지 않음
+      // (translucent + onTap 은 iOS 시뮬레이터에서 탭 경쟁을 일으킬 수 있음)
       body: GestureDetector(
-        behavior: HitTestBehavior.translucent, // 빈 공간 터치도 인식
-        onTap: () => FocusScope.of(context).unfocus(), // 바깥 터치 시 키보드 dismiss
+        behavior: HitTestBehavior.deferToChild,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: SafeArea(
           child: Padding(
             padding: padding ?? EdgeInsets.all(CNST_SIZE_NORMAL),

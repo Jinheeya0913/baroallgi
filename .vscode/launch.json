@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "baroallgi · iPhone 18 (Run, no debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "deviceId": "iPhone 18",
+      "noDebug": true
+    },
+    {
+      "name": "baroallgi · iPhone 18 (Debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "deviceId": "iPhone 18"
+    },
+    {
+      "name": "baroallgi (current device)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "baroallgi · profile",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "deviceId": "iPhone 18",
+      "noDebug": true
+    }
+  ]
+}

@@ -50,18 +50,22 @@ app.*.map.json
 firebase_options.dart
 firebase.json
 
-#paltform
-/ios
+# platform (iOS는 소스 커밋, 생성물은 ios/.gitignore 로 제외)
+# /ios  — 의도적으로 추적함 (Podfile, Runner, xcodeproj 등)
 /linux
 /macos
-
 /windows
 /web
+
+# iOS secrets (Android google-services.json 과 동일 정책)
+**/GoogleService-Info.plist
 
 #불필요
 /build
 /test
 
+# Local Flutter SDK / caches used for tooling (do not commit)
+.tooling/
 
 memo.txt
 
