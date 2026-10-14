@@ -1,11 +1,8 @@
-import 'package:baroallgi/core/const/const_code.dart';
 import 'package:baroallgi/core/provider/firebase_provider.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:baroallgi/features/auth/models/auth_model.dart';
-import 'package:baroallgi/features/auth/models/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -18,7 +15,7 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthModel?>((
   );
 });
 
-final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) {
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(ref.watch(authDataSourceProvider));
 });
 
@@ -36,15 +33,7 @@ class AuthNotifier extends StateNotifier<AuthModel?> {
     final autoLogin = await _storage.read(key: 'useAutoLogin');
 
     if (autoLogin == 'true') {
-      final user = FirebaseAuth.instance.currentUser;
-      // firebase SDK에서 최근 접속한 유저 정보에 대해 알아서 토근까지 검증해줌.
-      if (user != null) {
-        state = AuthModel(
-          authResultCode: '00',
-          authStatusCode: AUTH_STATUS_LOGIN,
-          userModel: UserModel.fromFirebase(user),
-        );
-      }
+      state = _authRepository.currentUser();
     }
   }
 

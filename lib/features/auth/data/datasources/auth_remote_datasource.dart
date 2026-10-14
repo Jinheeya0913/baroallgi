@@ -19,4 +19,6 @@ class AuthRemoteDataSource {
       password: password,
     );
   }
+
+  User? currentUser() => _auth.currentUser;
 }

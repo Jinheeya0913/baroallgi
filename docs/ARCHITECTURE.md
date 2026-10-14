@@ -45,7 +45,7 @@ features/<feature>/
   presentation/                   # 페이지, 그 화면 전용 위젯
 ```
 
-호출 방향은 `presentation → provider → repository → datasource`다. 페이지에서 Firestore·FirebaseAuth를 직접 호출하지 않는다.
+호출 방향은 `presentation → provider → repository → datasource`다. 페이지와 notifier에서 Firestore·FirebaseAuth를 직접 호출하지 않는다.
 
 `auth`만 provider가 `presentation/provider/auth_provider.dart`에 있다. 새 기능은 `article`처럼 `provider/`를 presentation 밖에 둔다.
 

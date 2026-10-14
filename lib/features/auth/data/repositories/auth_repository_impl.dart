@@ -35,6 +35,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  AuthModel? currentUser() {
+    final user = _dataSource.currentUser();
+    if (user == null) return null;
+    return AuthModel(
+      authResultCode: '00',
+      authStatusCode: AUTH_STATUS_LOGIN,
+      userModel: UserModel.fromFirebase(user),
+    );
+  }
+
+  @override
   Future<AuthModel> signUp(String email, String password) async {
     try {
       final result = await _dataSource.signUp(email, password);
