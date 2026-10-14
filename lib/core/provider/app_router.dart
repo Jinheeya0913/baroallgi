@@ -9,6 +9,7 @@ import 'package:baroallgi/features/article/presentation/article_fullimg_page.dar
 import 'package:baroallgi/features/article/presentation/article_list_page.dart';
 import 'package:baroallgi/features/article/presentation/article_main_page.dart';
 import 'package:baroallgi/features/auth/presentation/login_page.dart';
+import 'package:baroallgi/features/chat/presentation/chat_page.dart';
 import 'package:baroallgi/features/example/test_route_page.dart';
 import 'package:baroallgi/features/main/home_page.dart';
 import 'package:baroallgi/features/article/presentation/article_card_edit_page.dart';

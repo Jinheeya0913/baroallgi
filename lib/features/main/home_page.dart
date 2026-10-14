@@ -330,7 +330,7 @@ class HomePage extends HookConsumerWidget {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        "의심되는 정보나 찌라시를 제보해 주세요.\n올바로가 팩트체크 해드립니다!",
+                        "AI를 통해 올바른 정보를 확인해드립니다!",
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 13,

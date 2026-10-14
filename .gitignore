@@ -68,3 +68,7 @@ firebase.json
 
 memo.txt
 
+# Markdown. README만 추적한다.
+*.md
+!README.md
+

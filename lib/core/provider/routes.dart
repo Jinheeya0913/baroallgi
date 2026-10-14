@@ -40,6 +40,11 @@ List<GoRoute> _routes = [
     builder: (context, state) => const RouteTestPage(),
   ),
   GoRoute(
+    path: '/chat',
+    name: 'chat',
+    builder: (context, state) => const ChatPage(),
+  ),
+  GoRoute(
     path: '/article_main',
     name: 'article_main',
     builder: (context, state) => const ArticleMainPage(),

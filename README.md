@@ -3,6 +3,7 @@
 잘못된 정보로 바로 잡아주다!
 
 - 앱·SDK·의존성 버전: [docs/VERSION_MANAGEMENT.md](docs/VERSION_MANAGEMENT.md)
+- 디렉터리·레이어·라우팅: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - **iOS 시뮬레이터 (`flutter run`):** [docs/IOS_SIMULATOR.md](docs/IOS_SIMULATOR.md)
 
 ```bash

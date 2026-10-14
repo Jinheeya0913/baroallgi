@@ -12,4 +12,4 @@ alwaysApply: true
 - 상태 관리는 Riverpod. 새 상태는 `Notifier` / `AsyncNotifier`이고, 기존 `ChangeNotifier`·`StateNotifier`는 유지한다. 모델은 `json_serializable`이고 `*.g.dart`는 생성물이다. `@riverpod` 코드젠은 쓰지 않는다.
 - 라우트는 `lib/core/provider/routes.dart`에만 추가한다. 개발 중 진입은 `RouteTestPage`의 `_buildPushCard`. `initialLocation`(`/route_test`)과 주석 처리된 `redirect`는 유지한다.
 - 화면은 `DefaultLayout`으로 감싸고, 간격은 `AppSizes`, 색은 `AppColors`를 재사용한다.
-- 챗봇은 아직 없다. LLM·`firebase_ai`·`data/` 없이 `lib/features/chat/presentation/` UI만 만들고 `RouteTestPage`에 연결한다. `HomePage`의 `Icons.campaign_rounded`는 그 다음 단계에서 바꾼다.
+- 챗봇 UI는 `lib/features/chat/`에 있다. 라우트는 `/chat`이고 진입은 `RouteTestPage`다. LLM·`firebase_ai`·`data/`는 붙이지 않는다. `HomePage`의 `Icons.campaign_rounded`는 아직 바꾸지 않는다.
