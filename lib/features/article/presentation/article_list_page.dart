@@ -1,6 +1,6 @@
 import 'package:baroallgi/core/const/app_metadata.dart';
 import 'package:baroallgi/core/const/const_color.dart';
-import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:baroallgi/features/article/models/article_type.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/article/provider/article_provider.dart';
 import 'package:flutter/material.dart';

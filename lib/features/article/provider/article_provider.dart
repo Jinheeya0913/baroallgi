@@ -1,4 +1,4 @@
-import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:baroallgi/features/article/models/article_type.dart';
 import 'package:baroallgi/core/provider/firebase_provider.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
 import 'package:baroallgi/features/article/data/datasources/article_remote_datasource.dart';

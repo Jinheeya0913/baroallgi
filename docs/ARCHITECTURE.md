@@ -13,7 +13,6 @@ lib/
   firebase_options.dart     # FlutterFire 생성물. 수동 수정하지 않음
   core/                     # 피처에 속하지 않는 공용 코드
     const/                  # 색, 크기, 결과 코드, 앱 메타
-    enum/
     network/models/         # BaseResponse, PaginatedResponse
     photo/                  # ImagePickerPage
     provider/               # 라우터, Firebase, 스토리지, 권한, 로그인 리다이렉트
@@ -102,7 +101,7 @@ Dart 파일은 snake_case다. 파일명은 그 파일의 대표 public 타입을
 - `features/article/provider/article_provider.dart` — 변수 이름이 `articleNotifier`다.
 - `features/auth/presentation/provider/` — provider가 presentation 안에 있다. 새 기능은 피처 루트의 `provider/`에 둔다.
 - `features/main/home_page.dart`, `lib/splash_page.dart` — `presentation/` 밖에 있다.
-- `core/enum/article_type_enum.dart` — article 전용 enum이 core에 있고, 값은 `FULLIMG`처럼 대문자다.
+- `features/article/models/article_type.dart` — 값은 `FULLIMG`처럼 대문자다. Firestore에 이름으로 저장되므로 바꾸지 않는다.
 
 ## 상태와 모델
 

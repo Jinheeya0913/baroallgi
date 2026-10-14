@@ -8,7 +8,7 @@ import 'package:baroallgi/features/article/data/datasources/article_remote_datas
 import 'package:baroallgi/features/article/data/repositories/article_repository.dart';
 import 'package:baroallgi/features/article/models/article_card_model.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
-import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:baroallgi/features/article/models/article_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {

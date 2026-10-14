@@ -2,7 +2,7 @@ import 'package:baroallgi/core/network/models/base_response.dart';
 import 'package:baroallgi/core/network/models/paginated_response.dart';
 import 'package:baroallgi/features/article/models/article_card_model.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
-import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:baroallgi/features/article/models/article_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 

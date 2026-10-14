@@ -1,6 +1,6 @@
 import 'package:baroallgi/features/article/models/article_common_model.dart';
 import 'package:baroallgi/features/article/models/article_model.dart';
-import 'package:baroallgi/core/enum/article_type_enum.dart';
+import 'package:baroallgi/features/article/models/article_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleDatasource {
