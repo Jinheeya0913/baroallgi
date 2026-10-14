@@ -140,7 +140,7 @@ final chatProvider =
 - 경로를 추가하면 `routes.dart`에 `GoRoute`를 넣고, `app_router.dart`에 페이지만 import한다.
 - 이동은 `context.push(path)`. 라우트 `name`은 path에서 `/`를 뺀 스네이크 케이스다. 예: `/article_main` → `article_main`.
 - 중첩 경로는 부모 `routes` 안에 둔다. 예: `/article_main/article_list`.
-- 추가 인자는 `state.extra`의 `Map<String, dynamic>`.
+- 추가 인자는 `state.extra`의 전용 클래스다. 예: `ImagePickerArgs`. 화면이 모델 하나면 그 모델을 그대로 넘긴다.
 - 현재 `initialLocation`은 `/route_test`다. `redirect`(로그인 게이트)는 주석 처리되어 있다. 테스트 중에는 이 상태를 유지한다.
 - 개발 중 화면은 `RouteTestPage`에 `_buildPushCard` 한 줄을 추가해 진입한다.
 

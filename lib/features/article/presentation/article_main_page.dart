@@ -1,4 +1,5 @@
 import 'package:baroallgi/core/const/const_color.dart';
+import 'package:baroallgi/core/photo/image_picker_args.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_elevated_button.dart';
@@ -311,33 +312,29 @@ class ArticleMainPage extends HookConsumerWidget {
   }
 
   void _goNextPage(BuildContext context, ArticleModel articleMain) {
-    // 다음 페이지
-    late String nextPath;
-
-    // 다음 => 이후 페이지
-    late String nextRoute;
-    String? pageTitle;
-
     if (articleMain.articleType == ArticleType.CARD) {
-      nextPath = 'image_picker';
-      nextRoute = 'rticle_card_edit';
-      pageTitle = '카드사진 선택';
-    } else if (articleMain.articleType == ArticleType.FULLIMG) {
-      nextPath = 'image_picker';
-      nextRoute = 'article_fullImg_edit';
-      pageTitle = '사진 선택';
-    } else {
-      nextPath = 'article_detail';
+      context.pushNamed(
+        'image_picker',
+        extra: ImagePickerArgs(
+          article: articleMain,
+          nextRoute: 'article_card_edit',
+          pageTitle: '카드사진 선택',
+        ),
+      );
+      return;
     }
-
-    context.pushNamed(
-      nextPath,
-      extra: {
-        'articleMain': articleMain.toJson(),
-        'nextRoute': nextRoute,
-        'pageTitle': pageTitle,
-      },
-    );
+    if (articleMain.articleType == ArticleType.FULLIMG) {
+      context.pushNamed(
+        'image_picker',
+        extra: ImagePickerArgs(
+          article: articleMain,
+          nextRoute: 'article_fullImg_edit',
+          pageTitle: '사진 선택',
+        ),
+      );
+      return;
+    }
+    context.pushNamed('article_detail');
   }
 
   String? _validInputValues(ArticleModel articleMain) {

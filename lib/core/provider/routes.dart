@@ -26,12 +26,11 @@ List<GoRoute> _routes = [
     path: '/image_picker',
     name: 'image_picker',
     builder: (context, state) {
-      final data = state.extra as Map<String, dynamic>;
-      print('rlog :: image_picker > data : ${data}');
+      final args = state.extra as ImagePickerArgs;
       return ImagePickerPage(
-        pageTitle: data['pageTitle'],
-        nextRoute: data['nextRoute'],
-        data: data['articleMain'],
+        pageTitle: args.pageTitle,
+        nextRoute: args.nextRoute,
+        article: args.article,
       );
     },
   ),
@@ -64,17 +63,16 @@ List<GoRoute> _routes = [
         path: 'article_card_edit',
         name: 'article_card_edit',
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          print('rlog :: article_card_edit > data : ${data}');
-          return ArticleCardEditPage(data: data);
+          final article = state.extra as ArticleModel;
+          return ArticleCardEditPage(article: article);
         },
       ),
       GoRoute(
         path: 'article_card_view',
         name: 'article_card_view',
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return ArticleCardViewPage(data: data,);
+          final detail = state.extra as ArticleCardModel;
+          return ArticleCardViewPage(detail: detail);
         },
       ),
     ],

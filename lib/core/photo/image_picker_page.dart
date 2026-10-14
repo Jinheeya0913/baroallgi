@@ -1,5 +1,6 @@
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/provider/permission_provider.dart';
+import 'package:baroallgi/features/article/models/article_model.dart';
 import 'package:baroallgi/core/provider/select_image_provider.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +14,14 @@ class ImagePickerPage extends HookConsumerWidget {
   static String get routeName => 'image_picker';
   final String nextRoute;
   final String? pageTitle;
-  final Map<String,dynamic>? data;
+  final ArticleModel article;
 
   const ImagePickerPage({
     super.key,
     required this.nextRoute,
+    required this.article,
     this.pageTitle,
-    this.data,
-  }); // 임시로 반드시 cardName으로 향하게 지정
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -209,7 +210,7 @@ class ImagePickerPage extends HookConsumerWidget {
   void _pushNextPage(BuildContext context) {
     context.pushNamed(
       nextRoute,
-      extra: data,
+      extra: article,
     );
   }
 }

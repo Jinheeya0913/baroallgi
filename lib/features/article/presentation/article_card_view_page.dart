@@ -7,18 +7,16 @@ import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 class ArticleCardViewPage extends HookConsumerWidget {
   static String get routeName => 'article_card_view';
   
-  final Map<String,dynamic> data;
+  final ArticleCardModel detail;
 
   const ArticleCardViewPage({
     super.key,
-    required this.data,
+    required this.detail,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final details = data['detail'];
-    final model = ArticleCardModel.fromJson(details);
-    final cards = model.cards ?? [];
+    final cards = detail.cards ?? [];
     final pageController = usePageController();
     final currentPage = useState(1);
 

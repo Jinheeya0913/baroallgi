@@ -17,9 +17,9 @@ import 'package:photo_manager/photo_manager.dart';
 
 class ArticleCardEditPage extends HookConsumerWidget {
   static String get routeName => 'article_card_edit';
-  final Map<String, dynamic> data;
+  final ArticleModel article;
 
-  const ArticleCardEditPage({super.key, required this.data});
+  const ArticleCardEditPage({super.key, required this.article});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -182,13 +182,11 @@ class ArticleCardEditPage extends HookConsumerWidget {
                           );
                         }
 
-                        final articleMain = ArticleModel.fromJson(data);
-
-                        print('rlog :: articleMain : ${articleMain.toJson()}');
+                        print('rlog :: articleMain : ${article.toJson()}');
                         print('rlog :: cardList : ${cardDataList.length}');
 
                         final result = await articleRepository.saveArticleCard(
-                          mainInfo: articleMain,
+                          mainInfo: article,
                           cardDataList: cardDataList,
                         );
 
@@ -196,10 +194,16 @@ class ArticleCardEditPage extends HookConsumerWidget {
 
                         if (result.isSuccess) {
                           print('rlog :: 완료');
-                          context.pushNamed(
-                            'article_card_view',
-                            extra: result.data as Map<String, dynamic>,
-                          );
+                          final saved = result.data;
+                          final detailJson = saved is Map ? saved['detail'] : null;
+                          if (detailJson is Map) {
+                            context.pushNamed(
+                              'article_card_view',
+                              extra: ArticleCardModel.fromJson(
+                                Map<String, dynamic>.from(detailJson),
+                              ),
+                            );
+                          }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                               BaseSnackBar(content: Text('${result.resultMsg}')));
