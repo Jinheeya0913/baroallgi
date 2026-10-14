@@ -41,6 +41,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void _send([String? text]) {
+    final room = ref.read(chatRoomsProvider).where((item) {
+      return item.id == widget.roomId;
+    }).firstOrNull;
+    if (room == null || room.isReplying) return;
+
     ref.read(chatRoomsProvider.notifier).send(widget.roomId, text ?? _controller.text);
     if (text != null) return;
     _controller.clear();
@@ -71,7 +76,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       );
     }
 
-    final messages = [_introMessage, ...room.messages];
+    final messages = [
+      _introMessage,
+      ...room.messages,
+      if (room.isReplying) _pendingMessage,
+    ];
 
     return DefaultLayout(
       title: Text(room.title ?? '새 대화'),
@@ -96,7 +105,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           _ChatComposer(
             controller: _controller,
-            canSend: _canSend,
+            canSend: _canSend && !room.isReplying,
             onSend: _send,
           ),
         ],
@@ -109,6 +118,12 @@ const _introMessage = ChatMessageModel(
   id: 'intro',
   role: ChatRole.assistant,
   text: '어떤 내용이 궁금한가요? 소식, 광고, 문자 내용을 적어 주시면 함께 살펴볼게요.',
+);
+
+const _pendingMessage = ChatMessageModel(
+  id: 'pending',
+  role: ChatRole.assistant,
+  text: '확인하고 있어요',
 );
 
 class _PreviewBanner extends StatelessWidget {
@@ -124,7 +139,7 @@ class _PreviewBanner extends StatelessWidget {
         vertical: AppSizes.s14,
       ),
       child: const Text(
-        '지금은 화면만 확인할 수 있어요. 답변은 아직 연결되지 않았습니다.',
+        '보낸 내용을 바탕으로 맞는지 함께 살펴볼게요.',
         style: TextStyle(
           color: AppColors.primaryNavy,
           fontSize: AppSizes.fontNormal,
