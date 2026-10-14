@@ -42,7 +42,17 @@ List<GoRoute> _routes = [
   GoRoute(
     path: '/chat',
     name: 'chat',
-    builder: (context, state) => const ChatPage(),
+    builder: (context, state) => const ChatListPage(),
+    routes: [
+      GoRoute(
+        path: 'room/:roomId',
+        name: 'chat_room',
+        builder: (context, state) {
+          final roomId = state.pathParameters['roomId']!;
+          return ChatPage(roomId: roomId);
+        },
+      ),
+    ],
   ),
   GoRoute(
     path: '/article_main',

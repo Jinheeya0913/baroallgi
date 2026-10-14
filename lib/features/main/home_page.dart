@@ -2,6 +2,7 @@ import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/app_logo_img.dart';
+import 'package:baroallgi/core/ui/widgets/base_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -57,7 +58,7 @@ class HomePage extends HookConsumerWidget {
                 ),
               ),
             ),
-            _buildHotPickSlider(),
+            const _HotPickSlider(),
             _buildReportCard(context),
             SizedBox(height: 10),
             _buildMenuCard(
@@ -183,90 +184,6 @@ class HomePage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildHotPickSlider() {
-    final List<Map<String, String>> hotPicks = [
-      {
-        'image': 'https://picsum.photos/id/1/600/400',
-        'title': '최신 보이스피싱: "부고 문자" 주의!',
-        'tag': '긴급',
-      },
-      {
-        'image': 'https://picsum.photos/id/2/600/400',
-        'title': 'SNS 과대광고: 먹기만 해도 살 빠지는 약?',
-        'tag': '광고',
-      },
-      {
-        'image': 'https://picsum.photos/id/3/600/400',
-        'title': '잘못된 의학지식: 암 예방하는 식초?',
-        'tag': '의학',
-      },
-    ];
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: PageView.builder(
-        itemCount: hotPicks.length,
-        itemBuilder: (context, index) {
-          final item = hotPicks[index];
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              image: DecorationImage(
-                image: NetworkImage(item['image']!),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Container(
-              // 이미지 위에 검정 그라데이션을 입혀 텍스트 가독성 확보
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
-                ),
-              ),
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      item['tag']!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    item['title']!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildReportCard(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16.0),
@@ -378,6 +295,159 @@ class HomePage extends HookConsumerWidget {
           label: 'open image',
         ),
       ],
+    );
+  }
+}
+
+class _HotPick {
+  final String imageUrl;
+  final String title;
+  final String tag;
+
+  const _HotPick({
+    required this.imageUrl,
+    required this.title,
+    required this.tag,
+  });
+}
+
+class _HotPickSlider extends StatefulWidget {
+  const _HotPickSlider();
+
+  @override
+  State<_HotPickSlider> createState() => _HotPickSliderState();
+}
+
+class _HotPickSliderState extends State<_HotPickSlider> {
+  static const _items = <_HotPick>[
+    _HotPick(
+      imageUrl: 'https://picsum.photos/id/1/600/400',
+      title: '최신 보이스피싱: "부고 문자" 주의!',
+      tag: '긴급',
+    ),
+    _HotPick(
+      imageUrl: 'https://picsum.photos/id/2/600/400',
+      title: 'SNS 과대광고: 먹기만 해도 살 빠지는 약?',
+      tag: '광고',
+    ),
+    _HotPick(
+      imageUrl: 'https://picsum.photos/id/3/600/400',
+      title: '잘못된 의학지식: 암 예방하는 식초?',
+      tag: '의학',
+    ),
+  ];
+
+  var _didPrecacheNeighbors = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didPrecacheNeighbors) return;
+    _didPrecacheNeighbors = true;
+    for (final item in _items.skip(1)) {
+      precacheImage(
+        NetworkImage(item.imageUrl),
+        context,
+        onError: (_, _) {},
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: PageView.builder(
+        itemCount: _items.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: _HotPickSlide(item: _items[index]),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _HotPickSlide extends StatelessWidget {
+  final _HotPick item;
+
+  const _HotPickSlide({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BaseNetworkImage(
+        url: item.imageUrl,
+        builder: (context, child) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              child,
+              _HotPickOverlay(item: item),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _HotPickOverlay extends StatelessWidget {
+  final _HotPick item;
+
+  const _HotPickOverlay({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Colors.black.withValues(alpha: 0.8),
+          ],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  item.tag,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

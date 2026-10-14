@@ -3,14 +3,16 @@ import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/chat/models/chat_message_model.dart';
-import 'package:baroallgi/features/chat/provider/chat_provider.dart';
+import 'package:baroallgi/features/chat/provider/chat_rooms_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
-  static String get routeName => 'chat';
+  static String get routeName => 'chat_room';
 
-  const ChatPage({super.key});
+  final String roomId;
+
+  const ChatPage({super.key, required this.roomId});
 
   @override
   ConsumerState<ChatPage> createState() => _ChatPageState();
@@ -39,16 +41,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void _send([String? text]) {
-    ref.read(chatProvider.notifier).send(text ?? _controller.text);
+    ref.read(chatRoomsProvider.notifier).send(widget.roomId, text ?? _controller.text);
     if (text != null) return;
     _controller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatProvider);
+    final room = ref.watch(chatRoomsProvider).where((item) {
+      return item.id == widget.roomId;
+    }).firstOrNull;
 
-    ref.listen(chatProvider, (previous, next) {
+    ref.listen(chatRoomsProvider, (previous, next) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_scrollController.hasClients) return;
         _scrollController.animateTo(
@@ -59,8 +63,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       });
     });
 
+    if (room == null) {
+      return const DefaultLayout(
+        title: Text('새 대화'),
+        useBackBtn: true,
+        child: Center(child: Text('대화를 찾을 수 없어요')),
+      );
+    }
+
+    final messages = [_introMessage, ...room.messages];
+
     return DefaultLayout(
-      title: const Text('이거 진짜인가요?'),
+      title: Text(room.title ?? '새 대화'),
       useBackBtn: true,
       padding: EdgeInsets.zero,
       child: Column(
@@ -90,6 +104,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 }
+
+const _introMessage = ChatMessageModel(
+  id: 'intro',
+  role: ChatRole.assistant,
+  text: '어떤 내용이 궁금한가요? 소식, 광고, 문자 내용을 적어 주시면 함께 살펴볼게요.',
+);
 
 class _PreviewBanner extends StatelessWidget {
   const _PreviewBanner();

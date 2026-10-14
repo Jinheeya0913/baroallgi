@@ -23,7 +23,7 @@ class RouteTestPage extends StatelessWidget {
             _buildPushCard(context, 'Main Home', '/main', Icons.home),
             _buildPushCard(
               context,
-              'AI 챗봇',
+              'AI 채팅방',
               '/chat',
               Icons.smart_toy_outlined,
             ),
