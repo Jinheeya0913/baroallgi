@@ -182,7 +182,7 @@ class ArticleMainPage extends HookConsumerWidget {
                       label: Text(
                         tag,
                         style: const TextStyle(
-                          fontSize: CNST_FONT_SIZE_NORMAL,
+                          fontSize: AppSizes.fontNormal,
                           color: Colors.white,
                         ),
                       ),
@@ -214,9 +214,9 @@ class ArticleMainPage extends HookConsumerWidget {
                     onFieldSubmitted: (_) => addTag(),
                   ),
                 ),
-                const SizedBox(width: CNST_SIZE_NORMAL),
+                const SizedBox(width: AppSizes.normal),
                 SizedBox(
-                  width: CNST_SIZE_40,
+                  width: AppSizes.s40,
                   child: BaseElevatedButton(
                     height: 40,
                     text: '+',

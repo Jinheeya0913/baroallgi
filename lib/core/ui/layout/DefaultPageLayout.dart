@@ -47,7 +47,7 @@ class DefaultLayout extends HookConsumerWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: SafeArea(
           child: Padding(
-            padding: padding ?? EdgeInsets.all(CNST_SIZE_NORMAL),
+            padding: padding ?? EdgeInsets.all(AppSizes.normal),
             child: child,
           ),
         ),

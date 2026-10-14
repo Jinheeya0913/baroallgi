@@ -19,7 +19,6 @@ lib/
     provider/               # 라우터, Firebase, 스토리지, 권한, 로그인 리다이렉트
     ui/
       layout/DefaultPageLayout.dart   # DefaultLayout (파일명만 PascalCase)
-      theme/theme_color.dart
       widgets/              # base_*.dart, app_logo_img, base_drawer
   features/
     auth/                   # 로그인·회원가입
@@ -104,7 +103,6 @@ Dart 파일은 snake_case다. 파일명은 그 파일의 대표 public 타입을
 - `features/auth/presentation/provider/` — provider가 presentation 안에 있다. 새 기능은 피처 루트의 `provider/`에 둔다.
 - `features/main/home_page.dart`, `lib/splash_page.dart` — `presentation/` 밖에 있다.
 - `core/enum/article_type_enum.dart` — article 전용 enum이 core에 있고, 값은 `FULLIMG`처럼 대문자다.
-- `const_size.dart`, `theme_color.dart` — `CNST_`, `CONST_`, `THEME_COLOR_` 전역 상수. 새 값은 여기에 추가하지 않고 `AppColors`와 크기 타입을 쓴다.
 
 ## 상태와 모델
 
@@ -147,8 +145,8 @@ final chatProvider =
 ## UI
 
 - 일반 화면은 `DefaultLayout`(`core/ui/layout/DefaultPageLayout.dart`)으로 감싼다. AppBar, 패딩, 키보드 내림, drawer를 여기서 처리한다.
-- 간격·글자 크기는 `core/const/const_size.dart` (`CNST_SIZE_NORMAL`, `CNST_FONT_SIZE_BIG` 등).
-- 색은 `core/ui/theme/theme_color.dart`의 `AppColors` 또는 `core/const/const_color.dart`. 홈의 일부 카드만 로컬 `Color(0xFF...)`를 쓴다.
+- 간격·글자 크기는 `core/const/const_size.dart`의 `AppSizes` (`AppSizes.normal`, `AppSizes.fontBig`).
+- 색은 `core/const/const_color.dart`의 `AppColors`.
 - 재사용 입력·버튼·스낵바는 `core/ui/widgets/base_*.dart`.
 - 로케일은 `ko_KR` 고정.
 

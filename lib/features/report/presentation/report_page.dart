@@ -33,15 +33,15 @@ class ReportPage extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('제목', style: TextStyle(fontSize: CNST_FONT_SIZE_BIG)),
-              SizedBox(width: CNST_SIZE_NORMAL),
+              Text('제목', style: TextStyle(fontSize: AppSizes.fontBig)),
+              SizedBox(width: AppSizes.normal),
               Expanded(
                 child: BaseTextField(
                   maxLength: 20,
                   errorText: '제목은 20자 이하로 작성해주셔야 합니다.',
                   contentPadding: 4.0,
                   useBorder: false,
-                  style: TextStyle(fontSize: CNST_FONT_SIZE_NORMAL),
+                  style: TextStyle(fontSize: AppSizes.fontNormal),
                 ),
               ),
             ],

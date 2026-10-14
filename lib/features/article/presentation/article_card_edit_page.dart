@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/provider/select_image_provider.dart';
 import 'package:baroallgi/core/ui/widgets/base_edit_sheet.dart';
 import 'package:baroallgi/core/ui/widgets/base_snack_bar.dart';
@@ -35,7 +36,7 @@ class ArticleCardEditPage extends HookConsumerWidget {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        color: const Color(0xFF1A1A1A), // 편집 집중도를 높이는 어두운 배경
+        color: AppColors.editorBackground,
         child: Stack(
           children: [
             // 1. 카드뉴스 편집 뷰

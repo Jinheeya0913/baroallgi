@@ -30,7 +30,7 @@ class HomePage extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
-              color: Colors.red.shade50, // 긴급함 강조를 위해 연한 빨간색 권장
+              color: AppColors.softRed,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -41,7 +41,7 @@ class HomePage extends HookConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.redAccent),
+                    const Icon(Icons.error_outline, color: AppColors.alertAccent),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -49,7 +49,7 @@ class HomePage extends HookConsumerWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Colors.redAccent,
+                          color: AppColors.alertAccent,
                         ),
                       ),
                     ),
@@ -88,7 +88,7 @@ class HomePage extends HookConsumerWidget {
             SizedBox(
               height: 100,
               child: Card(
-                color: Colors.blue.shade50,
+                color: AppColors.infoSurface,
                 child: Center(child: Text('🙋이거 진짜인가요?')),
               ),
             ),
@@ -273,7 +273,7 @@ class HomePage extends HookConsumerWidget {
       decoration: BoxDecoration(
         // 신뢰감을 주는 짙은 파란색 혹은 보라색 그라데이션
         gradient: const LinearGradient(
-          colors: [Color(0xFF4A00E0), Color(0xFF8E2DE2)],
+          colors: AppColors.reportGradient,
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),

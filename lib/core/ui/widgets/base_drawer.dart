@@ -1,4 +1,4 @@
-import 'package:baroallgi/core/ui/theme/theme_color.dart';
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/features/auth/models/auth_model.dart';
 import 'package:baroallgi/features/auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class BaseDrawer extends HookConsumerWidget {
           DrawerHeader(
             padding: EdgeInsets.zero,
             child: Container(
-              color: THEME_COLOR_MAIN,
+              color: AppColors.accentSky,
               padding: EdgeInsets.only(
                 top: MediaQuery.of(context).padding.top,
               ),

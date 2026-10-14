@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
-import 'package:baroallgi/core/ui/theme/theme_color.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class BaseTextField extends HookWidget {
@@ -51,16 +51,16 @@ class BaseTextField extends HookWidget {
     this.validator,
     this.hideText = false,
     this.autoFocus = false,
-    this.circleBorder = CNST_SIZE_NORMAL,
+    this.circleBorder = AppSizes.normal,
     this.digitOnly = false,
     this.maxLength,
     this.contentPadding,
     this.filled = true,
-    this.borderColor = THEME_COLOR_WHITE,
+    this.borderColor = AppColors.inputFill,
     this.useBorder = true,
     this.maxLines = 1,
     this.borderWidth = 1,
-    this.cursorColor = THEME_COLOR_MAIN,
+    this.cursorColor = AppColors.accentSky,
     this.labelText,
     this.labelTextStyle,
     this.style,
@@ -150,16 +150,16 @@ class BaseTextField extends HookWidget {
         counter: const Offstage(),
         contentPadding: contentPadding != null
             ? EdgeInsets.all(contentPadding!)
-            : const EdgeInsets.all(CNST_SIZE_20),
+            : const EdgeInsets.all(AppSizes.s20),
 
         // hint
         hintText: hintText,
         hintStyle:
-            hintStyle ?? TextStyle(color: Colors.grey, fontSize: CNST_SIZE_14),
+            hintStyle ?? TextStyle(color: Colors.grey, fontSize: AppSizes.s14),
         // error
         errorText: errorText,
 
-        fillColor: THEME_COLOR_WHITE,
+        fillColor: AppColors.inputFill,
         filled: filled,
 
         // 배경생 유무

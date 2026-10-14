@@ -55,7 +55,7 @@ class LoginPage extends HookConsumerWidget {
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
-              padding: EdgeInsets.only(bottom: CNST_SIZE_NORMAL),
+              padding: EdgeInsets.only(bottom: AppSizes.normal),
               child: Column(
                 children: [
                   Column(
@@ -97,11 +97,11 @@ class LoginPage extends HookConsumerWidget {
                         inputAction: TextInputAction.next,
                         hintText: '이메일을 입력하세요',
                         hintStyle: TextStyle(
-                          fontSize: CNST_SIZE_NORMAL,
+                          fontSize: AppSizes.normal,
                           color: Colors.black45,
                         ),
                       ),
-                      SizedBox(height: CNST_SIZE_20),
+                      SizedBox(height: AppSizes.s20),
                       BaseTextField(
                         controller: userPwController,
                         onFieldSubmitted: (_) {
@@ -115,12 +115,12 @@ class LoginPage extends HookConsumerWidget {
                         focusNode: passwordFocusNode,
                         hintText: '비밀번호를 입력하세요',
                         hintStyle: TextStyle(
-                          fontSize: CNST_SIZE_NORMAL,
+                          fontSize: AppSizes.normal,
                           color: Colors.black45,
                         ),
                         hideText: true,
                       ),
-                      SizedBox(height: CNST_SIZE_20),
+                      SizedBox(height: AppSizes.s20),
                     ],
                   ),
                   // 버튼 컬럼
@@ -141,7 +141,7 @@ class LoginPage extends HookConsumerWidget {
                               child: Text(
                                 '로그인',
                                 style: TextStyle(
-                                  fontSize: CNST_SIZE_20,
+                                  fontSize: AppSizes.s20,
                                   color: Colors.black,
                                 ),
                               ),
@@ -160,7 +160,7 @@ class LoginPage extends HookConsumerWidget {
                               child: Text(
                                 '카카오 로그인',
                                 style: TextStyle(
-                                  fontSize: CNST_SIZE_20,
+                                  fontSize: AppSizes.s20,
                                   color: Colors.black,
                                 ),
                               ),
@@ -186,7 +186,7 @@ class LoginPage extends HookConsumerWidget {
                               child: Text(
                                 '회원가입 테스트',
                                 style: TextStyle(
-                                  fontSize: CNST_SIZE_20,
+                                  fontSize: AppSizes.s20,
                                   color: Colors.black,
                                 ),
                               ),

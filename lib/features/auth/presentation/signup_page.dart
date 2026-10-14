@@ -27,7 +27,7 @@ class SingUpPage extends HookConsumerWidget {
                       FocusScope.of(context).requestFocus(_node2);
                     },
                   ),
-                  SizedBox(height: CNST_SIZE_20),
+                  SizedBox(height: AppSizes.s20),
                   BaseTextField(
                     focusNode: _node2,
                     onChanged: (val) {},
@@ -49,7 +49,7 @@ class SingUpPage extends HookConsumerWidget {
   _title() {
     return const Text(
       '회원가입',
-      style: TextStyle(fontSize: CNST_SIZE_40, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: AppSizes.s40, fontWeight: FontWeight.bold),
     );
   }
 }

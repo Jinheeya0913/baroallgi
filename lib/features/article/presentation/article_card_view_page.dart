@@ -1,3 +1,4 @@
+import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/features/article/models/article_card_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,7 +27,7 @@ class ArticleCardViewPage extends HookConsumerWidget {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        color: const Color(0xFF1A1A1A), // 편집 페이지와 동일한 어두운 배경
+        color: AppColors.editorBackground,
         child: Stack(
           children: [
             // 1. 카드뉴스 슬라이드 뷰

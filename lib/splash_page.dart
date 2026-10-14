@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
           children: [
             SvgPicture.asset('assets/images/logo_allbaro.svg', width: 200),
             const SizedBox(
-              height: CNST_SIZE_NORMAL,
+              height: AppSizes.normal,
             ),
             const CircularProgressIndicator(
               color: Colors.black,

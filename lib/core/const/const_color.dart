@@ -61,4 +61,24 @@ class AppColors {
   static const Color health = Colors.green;
   static const Color ad = Colors.orange;
   static const Color rumor = Colors.purple;
+
+  /// 입력 필드 배경. 이전 `THEME_COLOR_WHITE`.
+  static const Color inputFill = Color(0xFFF3F2F2);
+
+  /// 커서와 드로어 헤더. 이전 `THEME_COLOR_MAIN`.
+  static const Color accentSky = Color.fromRGBO(107, 171, 255, 0.8);
+
+  /// 카드 편집·보기 배경.
+  static const Color editorBackground = Color(0xFF1A1A1A);
+
+  /// 홈 제보 카드 그라데이션.
+  static const List<Color> reportGradient = [
+    Color(0xFF4A00E0),
+    Color(0xFF8E2DE2),
+  ];
+
+  /// 안내 카드 배경. `Colors.blue.shade50`.
+  static const Color infoSurface = Color(0xFFE3F2FD);
+
+  static const Color alertAccent = Colors.redAccent;
 }

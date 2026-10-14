@@ -114,7 +114,7 @@ class ArticleDetailPage extends HookConsumerWidget {
                   ],
                 ),
               ),
-              SizedBox(width: CNST_SIZE_NORMAL),
+              SizedBox(width: AppSizes.normal),
               Expanded(
                 child: BaseElevatedButton(text: '작성 완료', onPressed: () {}),
               ),
