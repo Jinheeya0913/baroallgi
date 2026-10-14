@@ -62,7 +62,6 @@ firebase.json
 
 #불필요
 /build
-/test
 
 # Local Flutter SDK / caches used for tooling (do not commit)
 .tooling/

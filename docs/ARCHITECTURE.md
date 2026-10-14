@@ -149,6 +149,10 @@ final chatProvider =
 - 재사용 입력·버튼·스낵바는 `core/ui/widgets/base_*.dart`.
 - 로케일은 `ko_KR` 고정.
 
+## 테스트
+
+`test/`는 `lib/`와 같은 경로를 따른다. 모델은 `fromJson` / `toJson` 왕복을 검사한다. `ArticleRepositoryImpl`은 `FirebaseFirestore`와 `FireStorageProvider`에 붙어 있어, 그 의존을 바꿀 수 있게 된 뒤에 저장소 테스트를 추가한다.
+
 ## 챗봇 (예정, 아직 없음)
 
 LLM은 연결하지 않는다. UI만 먼저 만들고, 진입은 `RouteTestPage`에 붙인다.
