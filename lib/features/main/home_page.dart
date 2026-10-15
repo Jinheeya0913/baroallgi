@@ -5,6 +5,7 @@ import 'package:baroallgi/core/ui/widgets/app_logo_img.dart';
 import 'package:baroallgi/core/ui/widgets/base_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -59,7 +60,7 @@ class HomePage extends HookConsumerWidget {
               ),
             ),
             const _HotPickSlider(),
-            _buildReportCard(context),
+            _buildAiChatCard(context),
             SizedBox(height: 10),
             _buildMenuCard(
               '💰 금융사기',
@@ -184,11 +185,10 @@ class HomePage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildReportCard(BuildContext context) {
+  Widget _buildAiChatCard(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16.0),
       decoration: BoxDecoration(
-        // 신뢰감을 주는 짙은 파란색 혹은 보라색 그라데이션
         gradient: const LinearGradient(
           colors: AppColors.reportGradient,
           begin: Alignment.centerLeft,
@@ -207,10 +207,7 @@ class HomePage extends HookConsumerWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            // 제보하기 페이지로 이동 로직
-            print("제보하기 클릭됨");
-          },
+          onTap: () => context.push('/ai_chat'),
           borderRadius: BorderRadius.circular(20.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -219,7 +216,6 @@ class HomePage extends HookConsumerWidget {
             ),
             child: Row(
               children: [
-                // 반짝이는 효과를 주는 배경 위의 아이콘
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -227,7 +223,7 @@ class HomePage extends HookConsumerWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.campaign_rounded,
+                    Icons.smart_toy_outlined,
                     color: Colors.white,
                     size: 32,
                   ),

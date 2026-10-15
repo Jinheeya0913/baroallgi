@@ -50,16 +50,16 @@ List<GoRoute> _routes = [
     builder: (context, state) => const RouteTestPage(),
   ),
   GoRoute(
-    path: '/chat',
-    name: 'chat',
-    builder: (context, state) => const ChatListPage(),
+    path: '/ai_chat',
+    name: 'ai_chat',
+    builder: (context, state) => const AiChatPage(),
     routes: [
       GoRoute(
         path: 'room/:roomId',
-        name: 'chat_room',
+        name: 'ai_chat_room',
         builder: (context, state) {
           final roomId = state.pathParameters['roomId']!;
-          return ChatPage(roomId: roomId);
+          return AiChatRoomPage(roomId: roomId);
         },
       ),
     ],

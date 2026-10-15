@@ -2,24 +2,24 @@ import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
-import 'package:baroallgi/features/chat/models/chat_message_model.dart';
-import 'package:baroallgi/features/chat/provider/chat_rooms_provider.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
+import 'package:baroallgi/features/ai_chat/provider/ai_chat_rooms_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ChatPage extends ConsumerStatefulWidget {
-  static String get routeName => 'chat_room';
+class AiChatRoomPage extends ConsumerStatefulWidget {
+  static String get routeName => 'ai_chat_room';
 
   final String roomId;
 
-  const ChatPage({super.key, required this.roomId});
+  const AiChatRoomPage({super.key, required this.roomId});
 
   @override
-  ConsumerState<ChatPage> createState() => _ChatPageState();
+  ConsumerState<AiChatRoomPage> createState() => _AiChatRoomPageState();
 }
 
-class _ChatPageState extends ConsumerState<ChatPage> {
+class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   var _canSend = false;
@@ -33,7 +33,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       setState(() => _canSend = next);
     });
     Future.microtask(() {
-      ref.read(chatRoomsProvider.notifier).openRoom(widget.roomId);
+      ref.read(aiChatRoomsProvider.notifier).openRoom(widget.roomId);
     });
   }
 
@@ -45,26 +45,26 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void _send([String? text]) {
-    final room = ref.read(chatRoomsProvider).where((item) {
+    final room = ref.read(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
     if (room == null || room.isReplying) return;
 
-    ref.read(chatRoomsProvider.notifier).send(widget.roomId, text ?? _controller.text);
+    ref.read(aiChatRoomsProvider.notifier).send(widget.roomId, text ?? _controller.text);
     if (text != null) return;
     _controller.clear();
   }
 
   void _sendTest() {
-    final room = ref.read(chatRoomsProvider).where((item) {
+    final room = ref.read(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
     if (room == null || room.isReplying) return;
-    ref.read(chatRoomsProvider.notifier).sendTest(widget.roomId);
+    ref.read(aiChatRoomsProvider.notifier).sendTest(widget.roomId);
   }
 
   Future<void> _copyAllMessages() async {
-    final room = ref.read(chatRoomsProvider).where((item) {
+    final room = ref.read(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
     if (room == null || room.messages.isEmpty) {
@@ -80,7 +80,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     final body = room.messages
         .map((message) {
-          final speaker = message.role == ChatRole.user ? '나' : '바로알기';
+          final speaker = message.role == AiChatRole.user ? '나' : '바로알기';
           return '$speaker: ${message.text}';
         })
         .join('\n\n');
@@ -97,11 +97,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final room = ref.watch(chatRoomsProvider).where((item) {
+    final room = ref.watch(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
 
-    ref.listen(chatRoomsProvider, (previous, next) {
+    ref.listen(aiChatRoomsProvider, (previous, next) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_scrollController.hasClients) return;
         _scrollController.animateTo(
@@ -151,11 +151,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ),
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                return _ChatBubble(message: messages[index]);
+                return _AiChatBubble(message: messages[index]);
               },
             ),
           ),
-          _ChatComposer(
+          _AiChatComposer(
             controller: _controller,
             canSend: _canSend && !room.isReplying,
             onSend: _send,
@@ -166,16 +166,16 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 }
 
-final _introMessage = ChatMessageModel(
+final _introMessage = AiChatMessageModel(
   id: 'intro',
-  role: ChatRole.assistant,
+  role: AiChatRole.assistant,
   text: '어떤 내용이 궁금한가요? 소식, 광고, 문자 내용을 적어 주시면 함께 살펴볼게요.',
   createdAt: DateTime.fromMillisecondsSinceEpoch(0),
 );
 
-final _pendingMessage = ChatMessageModel(
+final _pendingMessage = AiChatMessageModel(
   id: 'pending',
-  role: ChatRole.assistant,
+  role: AiChatRole.assistant,
   text: '확인하고 있어요',
   createdAt: DateTime.fromMillisecondsSinceEpoch(0),
 );
@@ -253,14 +253,14 @@ class _PromptChips extends StatelessWidget {
   }
 }
 
-class _ChatBubble extends StatelessWidget {
-  final ChatMessageModel message;
+class _AiChatBubble extends StatelessWidget {
+  final AiChatMessageModel message;
 
-  const _ChatBubble({required this.message});
+  const _AiChatBubble({required this.message});
 
   @override
   Widget build(BuildContext context) {
-    final isUser = message.role == ChatRole.user;
+    final isUser = message.role == AiChatRole.user;
     final showCopy = !isUser && message.id != 'pending';
     final maxWidth = MediaQuery.sizeOf(context).width * 0.72;
 
@@ -353,12 +353,12 @@ class _ChatBubble extends StatelessWidget {
   }
 }
 
-class _ChatComposer extends StatelessWidget {
+class _AiChatComposer extends StatelessWidget {
   final TextEditingController controller;
   final bool canSend;
   final VoidCallback onSend;
 
-  const _ChatComposer({
+  const _AiChatComposer({
     required this.controller,
     required this.canSend,
     required this.onSend,

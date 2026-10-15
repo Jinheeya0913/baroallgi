@@ -1,20 +1,20 @@
 import 'package:baroallgi/core/const/const_color.dart';
 import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
-import 'package:baroallgi/features/chat/models/chat_room_model.dart';
-import 'package:baroallgi/features/chat/provider/chat_rooms_provider.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
+import 'package:baroallgi/features/ai_chat/provider/ai_chat_rooms_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ChatListPage extends ConsumerWidget {
-  static String get routeName => 'chat';
+class AiChatPage extends ConsumerWidget {
+  static String get routeName => 'ai_chat';
 
-  const ChatListPage({super.key});
+  const AiChatPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rooms = ref.watch(chatRoomsProvider);
+    final rooms = ref.watch(aiChatRoomsProvider);
 
     return DefaultLayout(
       title: const Text('대화'),
@@ -43,7 +43,7 @@ class ChatListPage extends ConsumerWidget {
                   onDelete: () => _deleteRoom(context, ref, room.id),
                   child: _RoomTile(
                     room: room,
-                    onTap: () => context.push('/chat/room/${room.id}'),
+                    onTap: () => context.push('/ai_chat/room/${room.id}'),
                   ),
                 );
               },
@@ -52,8 +52,8 @@ class ChatListPage extends ConsumerWidget {
   }
 
   void _openNewRoom(BuildContext context, WidgetRef ref) {
-    final id = ref.read(chatRoomsProvider.notifier).create();
-    context.push('/chat/room/$id');
+    final id = ref.read(aiChatRoomsProvider.notifier).create();
+    context.push('/ai_chat/room/$id');
   }
 
   Future<void> _deleteRoom(
@@ -62,7 +62,7 @@ class ChatListPage extends ConsumerWidget {
     String roomId,
   ) async {
     try {
-      await ref.read(chatRoomsProvider.notifier).delete(roomId);
+      await ref.read(aiChatRoomsProvider.notifier).delete(roomId);
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -241,7 +241,7 @@ class _SwipeDeleteTileState extends State<_SwipeDeleteTile>
 }
 
 class _RoomTile extends StatelessWidget {
-  final ChatRoomModel room;
+  final AiChatRoomModel room;
   final VoidCallback onTap;
 
   const _RoomTile({required this.room, required this.onTap});

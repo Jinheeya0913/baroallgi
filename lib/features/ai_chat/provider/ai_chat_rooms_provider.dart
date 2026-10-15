@@ -1,24 +1,24 @@
 import 'package:baroallgi/core/provider/firebase_provider.dart';
-import 'package:baroallgi/features/chat/data/datasources/chat_remote_datasource.dart';
-import 'package:baroallgi/features/chat/data/repositories/chat_repository.dart';
-import 'package:baroallgi/features/chat/data/repositories/chat_repository_impl.dart';
-import 'package:baroallgi/features/chat/models/chat_message_model.dart';
-import 'package:baroallgi/features/chat/models/chat_room_model.dart';
+import 'package:baroallgi/features/ai_chat/data/datasources/ai_chat_remote_datasource.dart';
+import 'package:baroallgi/features/ai_chat/data/repositories/ai_chat_repository.dart';
+import 'package:baroallgi/features/ai_chat/data/repositories/ai_chat_repository_impl.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final chatDatasourceProvider = Provider<ChatRemoteDataSource>((ref) {
-  return ChatRemoteDataSource(firestore: ref.watch(firestoreProvider));
+final aiChatDatasourceProvider = Provider<AiChatRemoteDataSource>((ref) {
+  return AiChatRemoteDataSource(firestore: ref.watch(firestoreProvider));
 });
 
-final chatRepositoryProvider = Provider<ChatRepository>((ref) {
-  return ChatRepositoryImpl(datasource: ref.watch(chatDatasourceProvider));
+final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
+  return AiChatRepositoryImpl(datasource: ref.watch(aiChatDatasourceProvider));
 });
 
-class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
+class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
   @override
-  List<ChatRoomModel> build() {
-    ref.watch(chatRepositoryProvider);
+  List<AiChatRoomModel> build() {
+    ref.watch(aiChatRepositoryProvider);
     Future.microtask(loadRooms);
     return [];
   }
@@ -33,7 +33,7 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
     }
 
     try {
-      final rooms = await ref.read(chatRepositoryProvider).fetchRooms(uid);
+      final rooms = await ref.read(aiChatRepositoryProvider).fetchRooms(uid);
       final drafts = state.where((room) => !room.isPersisted).toList();
       state = [...drafts, ...rooms];
     } catch (error) {
@@ -43,7 +43,7 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
 
   String create() {
     final now = DateTime.now();
-    final room = ChatRoomModel(
+    final room = AiChatRoomModel(
       id: now.microsecondsSinceEpoch.toString(),
       createdAt: now,
       updatedAt: now,
@@ -64,7 +64,7 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
 
     try {
       final messages = await ref
-          .read(chatRepositoryProvider)
+          .read(aiChatRepositoryProvider)
           .fetchMessages(uid, roomId);
       final latest = _find(roomId);
       if (latest == null) return;
@@ -88,9 +88,9 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
     if (current == null || current.isReplying) return;
 
     final now = DateTime.now();
-    final userMessage = ChatMessageModel(
+    final userMessage = AiChatMessageModel(
       id: now.microsecondsSinceEpoch.toString(),
-      role: ChatRole.user,
+      role: AiChatRole.user,
       text: testQuestion,
       createdAt: now,
     );
@@ -115,9 +115,9 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
     await Future<void>.delayed(const Duration(milliseconds: 400));
 
     final answeredAt = DateTime.now();
-    final assistantMessage = ChatMessageModel(
+    final assistantMessage = AiChatMessageModel(
       id: answeredAt.microsecondsSinceEpoch.toString(),
-      role: ChatRole.assistant,
+      role: AiChatRole.assistant,
       text: testAnswer,
       createdAt: answeredAt,
     );
@@ -149,9 +149,9 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
     if (current == null || current.isReplying) return;
 
     final now = DateTime.now();
-    final userMessage = ChatMessageModel(
+    final userMessage = AiChatMessageModel(
       id: now.microsecondsSinceEpoch.toString(),
-      role: ChatRole.user,
+      role: AiChatRole.user,
       text: trimmed,
       createdAt: now,
     );
@@ -171,9 +171,9 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
           isReplying: false,
           messages: [
             ...asked.messages,
-            ChatMessageModel(
+            AiChatMessageModel(
               id: '${now.microsecondsSinceEpoch}_err',
-              role: ChatRole.assistant,
+              role: AiChatRole.assistant,
               text: '대화를 저장하려면 로그인해 주세요.',
               createdAt: DateTime.now(),
             ),
@@ -190,12 +190,12 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
     }
 
     try {
-      final repository = ref.read(chatRepositoryProvider);
+      final repository = ref.read(aiChatRepositoryProvider);
       final answer = await repository.reply(asked.messages);
       final answeredAt = DateTime.now();
-      final assistantMessage = ChatMessageModel(
+      final assistantMessage = AiChatMessageModel(
         id: answeredAt.microsecondsSinceEpoch.toString(),
-        role: ChatRole.assistant,
+        role: AiChatRole.assistant,
         text: answer,
         createdAt: answeredAt,
       );
@@ -232,9 +232,9 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
         isReplying: false,
         messages: [
           ...latest.messages,
-          ChatMessageModel(
+          AiChatMessageModel(
             id: DateTime.now().microsecondsSinceEpoch.toString(),
-            role: ChatRole.assistant,
+            role: AiChatRole.assistant,
             text: '답변을 가져오지 못했어요. 잠시 후 다시 보내 주세요.',
             createdAt: DateTime.now(),
           ),
@@ -252,10 +252,10 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
 
   Future<void> _persistUserTurn(
     String uid,
-    ChatRoomModel room,
-    ChatMessageModel userMessage,
+    AiChatRoomModel room,
+    AiChatMessageModel userMessage,
   ) async {
-    final repository = ref.read(chatRepositoryProvider);
+    final repository = ref.read(aiChatRepositoryProvider);
     if (!room.isPersisted) {
       await repository.createRoom(uid, room.copyWith(isPersisted: true));
     } else {
@@ -269,10 +269,10 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
 
   Future<void> _persistAssistantTurn(
     String uid,
-    ChatRoomModel room,
-    ChatMessageModel assistantMessage,
+    AiChatRoomModel room,
+    AiChatMessageModel assistantMessage,
   ) async {
-    final repository = ref.read(chatRepositoryProvider);
+    final repository = ref.read(aiChatRepositoryProvider);
     await repository.saveMessage(uid, room.id, assistantMessage);
     await repository.updateRoom(uid, room);
   }
@@ -287,7 +287,7 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
         throw StateError('chat delete requires a signed-in user');
       }
       try {
-        await ref.read(chatRepositoryProvider).deleteRoom(uid, roomId);
+        await ref.read(aiChatRepositoryProvider).deleteRoom(uid, roomId);
       } catch (error) {
         debugPrint('rlog :: chat delete error : $error');
         rethrow;
@@ -297,18 +297,18 @@ class ChatRoomsNotifier extends Notifier<List<ChatRoomModel>> {
     state = state.where((room) => room.id != roomId).toList();
   }
 
-  ChatRoomModel? _find(String roomId) {
+  AiChatRoomModel? _find(String roomId) {
     for (final room in state) {
       if (room.id == roomId) return room;
     }
     return null;
   }
 
-  void _replace(ChatRoomModel room) {
+  void _replace(AiChatRoomModel room) {
     state = [room, ...state.where((item) => item.id != room.id)];
   }
 }
 
-final chatRoomsProvider = NotifierProvider<ChatRoomsNotifier, List<ChatRoomModel>>(
-  ChatRoomsNotifier.new,
+final aiChatRoomsProvider = NotifierProvider<AiChatRoomsNotifier, List<AiChatRoomModel>>(
+  AiChatRoomsNotifier.new,
 );

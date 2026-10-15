@@ -1,18 +1,18 @@
-import 'package:baroallgi/features/chat/models/chat_message_model.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatRoomModel {
+class AiChatRoomModel {
   final String id;
   final String? title;
   final String? lastMessageText;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<ChatMessageModel> messages;
+  final List<AiChatMessageModel> messages;
   final bool isReplying;
   final bool messagesLoaded;
   final bool isPersisted;
 
-  const ChatRoomModel({
+  const AiChatRoomModel({
     required this.id,
     required this.createdAt,
     required this.updatedAt,
@@ -24,10 +24,10 @@ class ChatRoomModel {
     this.isPersisted = false,
   });
 
-  factory ChatRoomModel.fromFirestore(String id, Map<String, dynamic> data) {
+  factory AiChatRoomModel.fromFirestore(String id, Map<String, dynamic> data) {
     final createdAt = data['createdAt'];
     final updatedAt = data['updatedAt'];
-    return ChatRoomModel(
+    return AiChatRoomModel(
       id: id,
       title: data['title'] as String?,
       lastMessageText: data['lastMessageText'] as String?,
@@ -47,17 +47,17 @@ class ChatRoomModel {
     };
   }
 
-  ChatRoomModel copyWith({
+  AiChatRoomModel copyWith({
     String? title,
     String? lastMessageText,
     DateTime? createdAt,
     DateTime? updatedAt,
-    List<ChatMessageModel>? messages,
+    List<AiChatMessageModel>? messages,
     bool? isReplying,
     bool? messagesLoaded,
     bool? isPersisted,
   }) {
-    return ChatRoomModel(
+    return AiChatRoomModel(
       id: id,
       title: title ?? this.title,
       lastMessageText: lastMessageText ?? this.lastMessageText,

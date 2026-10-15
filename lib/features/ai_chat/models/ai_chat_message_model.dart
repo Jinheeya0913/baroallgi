@@ -1,27 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum ChatRole { user, assistant }
+enum AiChatRole { user, assistant }
 
-class ChatMessageModel {
+class AiChatMessageModel {
   final String id;
-  final ChatRole role;
+  final AiChatRole role;
   final String text;
   final DateTime createdAt;
 
-  const ChatMessageModel({
+  const AiChatMessageModel({
     required this.id,
     required this.role,
     required this.text,
     required this.createdAt,
   });
 
-  factory ChatMessageModel.fromFirestore(String id, Map<String, dynamic> data) {
+  factory AiChatMessageModel.fromFirestore(String id, Map<String, dynamic> data) {
     final createdAt = data['createdAt'];
-    return ChatMessageModel(
+    return AiChatMessageModel(
       id: id,
-      role: data['role'] == ChatRole.assistant.name
-          ? ChatRole.assistant
-          : ChatRole.user,
+      role: data['role'] == AiChatRole.assistant.name
+          ? AiChatRole.assistant
+          : AiChatRole.user,
       text: data['text'] as String? ?? '',
       createdAt: createdAt is Timestamp
           ? createdAt.toDate()

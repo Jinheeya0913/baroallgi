@@ -1,10 +1,10 @@
-import 'package:baroallgi/features/chat/models/chat_message_model.dart';
-import 'package:baroallgi/features/chat/models/chat_room_model.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 
-class ChatRemoteDataSource {
-  ChatRemoteDataSource({required FirebaseFirestore firestore})
+class AiChatRemoteDataSource {
+  AiChatRemoteDataSource({required FirebaseFirestore firestore})
     : _firestore = firestore,
       _model = FirebaseAI.googleAI().generativeModel(
         model: 'gemini-3.8-flash',
@@ -41,10 +41,10 @@ class ChatRemoteDataSource {
     return _chats(uid).doc(roomId).collection('messages');
   }
 
-  Future<String> reply(List<ChatMessageModel> messages) async {
+  Future<String> reply(List<AiChatMessageModel> messages) async {
     final response = await _model.generateContent([
       for (final message in messages)
-        message.role == ChatRole.user
+        message.role == AiChatRole.user
             ? Content.text(message.text)
             : Content.model([TextPart(message.text)]),
     ]);
@@ -69,39 +69,39 @@ class ChatRemoteDataSource {
     return text.substring(0, 20);
   }
 
-  Future<List<ChatRoomModel>> fetchRooms(String uid) async {
+  Future<List<AiChatRoomModel>> fetchRooms(String uid) async {
     final snapshot = await _chats(uid)
         .orderBy('updatedAt', descending: true)
         .get();
     return [
       for (final doc in snapshot.docs)
-        ChatRoomModel.fromFirestore(doc.id, doc.data()),
+        AiChatRoomModel.fromFirestore(doc.id, doc.data()),
     ];
   }
 
-  Future<List<ChatMessageModel>> fetchMessages(String uid, String roomId) async {
+  Future<List<AiChatMessageModel>> fetchMessages(String uid, String roomId) async {
     final snapshot = await _messages(uid, roomId)
         .orderBy('createdAt')
         .get();
     return [
       for (final doc in snapshot.docs)
-        ChatMessageModel.fromFirestore(doc.id, doc.data()),
+        AiChatMessageModel.fromFirestore(doc.id, doc.data()),
     ];
   }
 
-  Future<void> createRoom(String uid, ChatRoomModel room) async {
+  Future<void> createRoom(String uid, AiChatRoomModel room) async {
     await _chats(uid).doc(room.id).set(room.toFirestore());
   }
 
   Future<void> saveMessage(
     String uid,
     String roomId,
-    ChatMessageModel message,
+    AiChatMessageModel message,
   ) async {
     await _messages(uid, roomId).doc(message.id).set(message.toFirestore());
   }
 
-  Future<void> updateRoom(String uid, ChatRoomModel room) async {
+  Future<void> updateRoom(String uid, AiChatRoomModel room) async {
     await _chats(uid).doc(room.id).set(room.toFirestore(), SetOptions(merge: true));
   }
 
