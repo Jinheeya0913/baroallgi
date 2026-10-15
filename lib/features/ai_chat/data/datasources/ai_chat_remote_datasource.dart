@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:baroallgi/features/ai_chat/models/ai_chat_keyword.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,9 +33,17 @@ class AiChatRemoteDataSource {
 ''';
 
   static const _titleInstruction = '''
-대화방 제목만 만든다.
-한국어로 짧게, 최대 20자로 쓴다.
-따옴표, 설명, 문장 부호 꾸밈 없이 제목 텍스트만 출력한다.
+대화방 메타만 JSON 한 줄로 만든다. 다른 설명은 쓰지 않는다.
+키는 title과 keyword다.
+- title: 한국어 짧은 제목, 최대 20자. 따옴표나 꾸밈 없이.
+- keyword: 아래 다섯 값 중 정확히 하나만.
+  - 금융 : 대출, 보이스피싱, 스미싱, 정부지원금, 계좌이체 등
+  - 의학 : 건강, 질병, 민간요법, 의료 정보
+  - 광고 : SNS, 쇼핑, 세일 등 허위·과대 광고
+  - sns 루머 : 단톡방 찌라시, SNS 유언비어, 루머
+  - 기타 : 위 네 분류에 애매하거나 해당하지 않을 때
+애매하거나 여러 분류에 걸쳐 있으면 기타로 한다.
+예시: {"title":"부고 문자 링크","keyword":"금융"}
 ''';
 
   CollectionReference<Map<String, dynamic>> _chats(String uid) {
@@ -57,16 +68,63 @@ class AiChatRemoteDataSource {
     return text;
   }
 
-  Future<String> generateTitle(String firstQuestion) async {
+  Future<AiChatRoomMeta> generateRoomMeta(String firstQuestion) async {
     final response = await _titleModel.generateContent([
       Content.text('사용자 첫 질문: $firstQuestion'),
     ]);
-    final text = response.text
-        ?.trim()
-        .replaceAll(RegExp(r'''^["“”']+|["“”']+$'''), '');
-    if (text == null || text.isEmpty) {
+    final raw = response.text?.trim();
+    if (raw == null || raw.isEmpty) {
       throw StateError('empty title response');
     }
+    return _parseRoomMeta(raw);
+  }
+
+  AiChatRoomMeta _parseRoomMeta(String raw) {
+    final jsonText = _extractJsonObject(raw);
+    if (jsonText != null) {
+      try {
+        final decoded = jsonDecode(jsonText);
+        if (decoded is Map<String, dynamic>) {
+          final title = _cleanTitle(decoded['title']?.toString());
+          final keyword = AiChatKeyword.tryParse(decoded['keyword']?.toString()) ??
+              AiChatKeyword.other;
+          if (title != null) {
+            return AiChatRoomMeta(title: title, keyword: keyword);
+          }
+        }
+      } catch (_) {
+        // fall through to plain title
+      }
+    }
+
+    final title = _cleanTitle(raw);
+    if (title == null) {
+      throw StateError('empty title response');
+    }
+    return AiChatRoomMeta(title: title, keyword: AiChatKeyword.other);
+  }
+
+  String? _extractJsonObject(String raw) {
+    final fenced = RegExp(
+      r'```(?:json)?\s*(\{.*?\})\s*```',
+      dotAll: true,
+    ).firstMatch(raw);
+    if (fenced != null) return fenced.group(1);
+
+    final start = raw.indexOf('{');
+    final end = raw.lastIndexOf('}');
+    if (start >= 0 && end > start) {
+      return raw.substring(start, end + 1);
+    }
+    return null;
+  }
+
+  String? _cleanTitle(String? raw) {
+    if (raw == null) return null;
+    final text = raw
+        .trim()
+        .replaceAll(RegExp(r'''^["“”']+|["“”']+$'''), '');
+    if (text.isEmpty) return null;
     if (text.length <= 20) return text;
     return text.substring(0, 20);
   }

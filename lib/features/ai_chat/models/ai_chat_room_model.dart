@@ -1,9 +1,12 @@
+import 'package:baroallgi/features/ai_chat/models/ai_chat_keyword.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AiChatRoomModel {
   final String id;
   final String? title;
+  /// 홈 메뉴와 같은 분류: 금융 / 의학 / 광고 / sns 루머.
+  final AiChatKeyword? keyword;
   final String? lastMessageText;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -17,6 +20,7 @@ class AiChatRoomModel {
     required this.createdAt,
     required this.updatedAt,
     this.title,
+    this.keyword,
     this.lastMessageText,
     this.messages = const [],
     this.isReplying = false,
@@ -30,6 +34,7 @@ class AiChatRoomModel {
     return AiChatRoomModel(
       id: id,
       title: data['title'] as String?,
+      keyword: AiChatKeyword.tryParse(data['keyword'] as String?),
       lastMessageText: data['lastMessageText'] as String?,
       createdAt: createdAt is Timestamp ? createdAt.toDate() : DateTime.now(),
       updatedAt: updatedAt is Timestamp ? updatedAt.toDate() : DateTime.now(),
@@ -41,6 +46,7 @@ class AiChatRoomModel {
   Map<String, dynamic> toFirestore() {
     return {
       'title': title,
+      if (keyword != null) 'keyword': keyword!.firestoreValue,
       'lastMessageText': lastMessageText,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
@@ -49,6 +55,7 @@ class AiChatRoomModel {
 
   AiChatRoomModel copyWith({
     String? title,
+    AiChatKeyword? keyword,
     String? lastMessageText,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -60,6 +67,7 @@ class AiChatRoomModel {
     return AiChatRoomModel(
       id: id,
       title: title ?? this.title,
+      keyword: keyword ?? this.keyword,
       lastMessageText: lastMessageText ?? this.lastMessageText,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

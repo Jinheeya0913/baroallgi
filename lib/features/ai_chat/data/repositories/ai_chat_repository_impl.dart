@@ -1,5 +1,6 @@
 import 'package:baroallgi/features/ai_chat/data/datasources/ai_chat_remote_datasource.dart';
 import 'package:baroallgi/features/ai_chat/data/repositories/ai_chat_repository.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_keyword.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
 
@@ -15,8 +16,8 @@ class AiChatRepositoryImpl implements AiChatRepository {
   }
 
   @override
-  Future<String> generateTitle(String firstQuestion) {
-    return _datasource.generateTitle(firstQuestion);
+  Future<AiChatRoomMeta> generateRoomMeta(String firstQuestion) {
+    return _datasource.generateRoomMeta(firstQuestion);
   }
 
   @override

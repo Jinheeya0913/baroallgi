@@ -245,10 +245,13 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
       );
 
       var title = asked.title;
+      var keyword = asked.keyword;
       final needsTitle = title == null || title.trim().isEmpty;
       if (needsTitle) {
         try {
-          title = await repository.generateTitle(trimmed);
+          final meta = await repository.generateRoomMeta(trimmed);
+          title = meta.title;
+          keyword = meta.keyword;
         } catch (error) {
           debugPrint('rlog :: chat title error : $error');
           title = _fallbackTitle(trimmed);
@@ -259,6 +262,7 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
       if (latest == null) return AiChatSendResult.sent;
       final answered = latest.copyWith(
         title: title,
+        keyword: keyword,
         updatedAt: answeredAt,
         lastMessageText: answer,
         isReplying: false,

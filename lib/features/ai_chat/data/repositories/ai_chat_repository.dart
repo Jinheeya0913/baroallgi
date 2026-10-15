@@ -1,10 +1,11 @@
+import 'package:baroallgi/features/ai_chat/models/ai_chat_keyword.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
 
 abstract class AiChatRepository {
   Future<String> reply(List<AiChatMessageModel> messages);
 
-  Future<String> generateTitle(String firstQuestion);
+  Future<AiChatRoomMeta> generateRoomMeta(String firstQuestion);
 
   Future<List<AiChatRoomModel>> fetchRooms(String uid);
 
