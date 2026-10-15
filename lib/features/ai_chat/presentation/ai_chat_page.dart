@@ -3,6 +3,7 @@ import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
 import 'package:baroallgi/features/ai_chat/provider/ai_chat_rooms_provider.dart';
+import 'package:baroallgi/features/auth/models/ai_chat_daily_usage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +16,7 @@ class AiChatPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final rooms = ref.watch(aiChatRoomsProvider);
+    final quota = ref.watch(aiChatDailyQuotaProvider);
 
     return DefaultLayout(
       title: const Text('대화'),
@@ -27,27 +29,35 @@ class AiChatPage extends ConsumerWidget {
         icon: const Icon(Icons.add_comment_outlined),
         label: const Text('새 대화'),
       ),
-      child: rooms.isEmpty
-          ? const _EmptyRooms()
-          : ListView.separated(
-              padding: const EdgeInsets.only(bottom: 88),
-              itemCount: rooms.length,
-              separatorBuilder: (_, _) => const Divider(
-                height: 1,
-                color: AppColors.divider,
-              ),
-              itemBuilder: (context, index) {
-                final room = rooms[index];
-                return _SwipeDeleteTile(
-                  key: ValueKey(room.id),
-                  onDelete: () => _deleteRoom(context, ref, room.id),
-                  child: _RoomTile(
-                    room: room,
-                    onTap: () => context.push('/ai_chat/room/${room.id}'),
+      child: Column(
+        children: [
+          if (quota != null && !quota.isUnlimited)
+            _DailyQuotaHeader(quota: quota),
+          Expanded(
+            child: rooms.isEmpty
+                ? const _EmptyRooms()
+                : ListView.separated(
+                    padding: const EdgeInsets.only(bottom: 88),
+                    itemCount: rooms.length,
+                    separatorBuilder: (_, _) => const Divider(
+                      height: 1,
+                      color: AppColors.divider,
+                    ),
+                    itemBuilder: (context, index) {
+                      final room = rooms[index];
+                      return _SwipeDeleteTile(
+                        key: ValueKey(room.id),
+                        onDelete: () => _deleteRoom(context, ref, room.id),
+                        child: _RoomTile(
+                          room: room,
+                          onTap: () => context.push('/ai_chat/room/${room.id}'),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -69,6 +79,37 @@ class AiChatPage extends ConsumerWidget {
         const SnackBar(content: Text('대화를 삭제하지 못했어요.')),
       );
     }
+  }
+}
+
+class _DailyQuotaHeader extends StatelessWidget {
+  final AiChatDailyQuota quota;
+
+  const _DailyQuotaHeader({required this.quota});
+
+  @override
+  Widget build(BuildContext context) {
+    final exhausted = quota.isExhausted;
+    return Container(
+      width: double.infinity,
+      color: exhausted
+          ? AppColors.alertRed.withValues(alpha: 0.08)
+          : AppColors.accentBlue.withValues(alpha: 0.35),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.normal,
+        vertical: 10,
+      ),
+      child: Text(
+        exhausted
+            ? '오늘 무료 이용 ${quota.limit}회를 모두 썼어요'
+            : '오늘 남은 무료 이용 ${quota.remaining}회',
+        style: TextStyle(
+          color: exhausted ? AppColors.alertRed : AppColors.primaryNavy,
+          fontSize: AppSizes.fontNormal,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 }
 

@@ -1,3 +1,4 @@
+import 'package:baroallgi/features/auth/models/ai_chat_daily_usage.dart';
 import 'package:baroallgi/features/auth/models/user_plan.dart';
 import 'package:baroallgi/features/auth/models/user_subscription.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,7 @@ class UserAddInfoModel {
   final UserPlan plan;
   final DateTime createdAt;
   final UserSubscription? subscription;
+  final AiChatDailyUsage? aiChatDaily;
 
   const UserAddInfoModel({
     required this.uid,
@@ -17,6 +19,7 @@ class UserAddInfoModel {
     required this.plan,
     required this.createdAt,
     this.subscription,
+    this.aiChatDaily,
   });
 
   factory UserAddInfoModel.free({
@@ -38,6 +41,7 @@ class UserAddInfoModel {
     final createdAt = data['createdAt'];
     final planName = data['plan'] as String? ?? UserPlan.free.name;
     final subscriptionData = data['subscription'];
+    final aiChatDailyData = data['aiChatDaily'];
     return UserAddInfoModel(
       uid: uid,
       nickname: data['nickname'] as String? ?? '',
@@ -50,6 +54,9 @@ class UserAddInfoModel {
       subscription: subscriptionData is Map<String, dynamic>
           ? UserSubscription.fromFirestore(subscriptionData)
           : null,
+      aiChatDaily: aiChatDailyData is Map<String, dynamic>
+          ? AiChatDailyUsage.fromFirestore(aiChatDailyData)
+          : null,
     );
   }
 
@@ -60,6 +67,7 @@ class UserAddInfoModel {
       'plan': plan.name,
       'createdAt': Timestamp.fromDate(createdAt),
       if (subscription != null) 'subscription': subscription!.toFirestore(),
+      if (aiChatDaily != null) 'aiChatDaily': aiChatDaily!.toFirestore(),
     };
   }
 
@@ -76,6 +84,7 @@ class UserAddInfoModel {
     UserPlan? plan,
     DateTime? createdAt,
     UserSubscription? subscription,
+    AiChatDailyUsage? aiChatDaily,
   }) {
     return UserAddInfoModel(
       uid: uid,
@@ -84,6 +93,7 @@ class UserAddInfoModel {
       plan: plan ?? this.plan,
       createdAt: createdAt ?? this.createdAt,
       subscription: subscription ?? this.subscription,
+      aiChatDaily: aiChatDaily ?? this.aiChatDaily,
     );
   }
 }

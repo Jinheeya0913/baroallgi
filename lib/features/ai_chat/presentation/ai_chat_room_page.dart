@@ -3,7 +3,9 @@ import 'package:baroallgi/core/const/const_size.dart';
 import 'package:baroallgi/core/ui/layout/DefaultPageLayout.dart';
 import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_send_result.dart';
 import 'package:baroallgi/features/ai_chat/provider/ai_chat_rooms_provider.dart';
+import 'package:baroallgi/features/auth/models/ai_chat_daily_usage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -44,23 +46,46 @@ class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
     super.dispose();
   }
 
-  void _send([String? text]) {
+  Future<void> _send([String? text]) async {
     final room = ref.read(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
     if (room == null || room.isReplying) return;
 
-    ref.read(aiChatRoomsProvider.notifier).send(widget.roomId, text ?? _controller.text);
+    final result = await ref
+        .read(aiChatRoomsProvider.notifier)
+        .send(widget.roomId, text ?? _controller.text);
+    if (!mounted) return;
+    if (_showSendResult(result)) return;
     if (text != null) return;
     _controller.clear();
   }
 
-  void _sendTest() {
+  Future<void> _sendTest() async {
     final room = ref.read(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
     if (room == null || room.isReplying) return;
-    ref.read(aiChatRoomsProvider.notifier).sendTest(widget.roomId);
+    final result =
+        await ref.read(aiChatRoomsProvider.notifier).sendTest(widget.roomId);
+    if (!mounted) return;
+    _showSendResult(result);
+  }
+
+  /// 한도 등 실패면 true.
+  bool _showSendResult(AiChatSendResult result) {
+    final message = switch (result) {
+      AiChatSendResult.dailyLimitExceeded =>
+        '오늘 무료 이용 ${AiChatDailyUsage.freeDailyLimit}회를 모두 썼어요.',
+      AiChatSendResult.quotaCheckFailed => '이용 횟수를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      AiChatSendResult.notSignedIn => '대화를 쓰려면 로그인해 주세요.',
+      _ => null,
+    };
+    if (message == null) return false;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+    return true;
   }
 
   Future<void> _copyAllMessages() async {
@@ -100,6 +125,7 @@ class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
     final room = ref.watch(aiChatRoomsProvider).where((item) {
       return item.id == widget.roomId;
     }).firstOrNull;
+    final quota = ref.watch(aiChatDailyQuotaProvider);
 
     ref.listen(aiChatRoomsProvider, (previous, next) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -125,6 +151,7 @@ class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
       ...room.messages,
       if (room.isReplying) _pendingMessage,
     ];
+    final quotaExhausted = quota?.isExhausted == true;
 
     return DefaultLayout(
       title: Text(room.title ?? '새 대화'),
@@ -141,7 +168,12 @@ class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
       child: Column(
         children: [
           const _PreviewBanner(),
-          _PromptChips(onSelect: _send, onTest: _sendTest),
+          if (quota != null && !quota.isUnlimited)
+            _DailyQuotaBar(remaining: quota.remaining, limit: quota.limit),
+          _PromptChips(
+            onSelect: quotaExhausted ? null : _send,
+            onTest: quotaExhausted ? null : _sendTest,
+          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -157,10 +189,42 @@ class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
           ),
           _AiChatComposer(
             controller: _controller,
-            canSend: _canSend && !room.isReplying,
+            canSend: _canSend && !room.isReplying && !quotaExhausted,
             onSend: _send,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DailyQuotaBar extends StatelessWidget {
+  final int remaining;
+  final int limit;
+
+  const _DailyQuotaBar({
+    required this.remaining,
+    required this.limit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final exhausted = remaining <= 0;
+    return Container(
+      width: double.infinity,
+      color: exhausted ? AppColors.alertRed.withValues(alpha: 0.08) : AppColors.surface,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.normal,
+        vertical: 8,
+      ),
+      child: Text(
+        exhausted
+            ? '오늘 무료 이용 $limit회를 모두 썼어요'
+            : '오늘 남은 무료 이용 $remaining회',
+        style: TextStyle(
+          color: exhausted ? AppColors.alertRed : AppColors.textSecondary,
+          fontSize: AppSizes.fontNormal,
+        ),
       ),
     );
   }
@@ -205,8 +269,8 @@ class _PreviewBanner extends StatelessWidget {
 }
 
 class _PromptChips extends StatelessWidget {
-  final ValueChanged<String> onSelect;
-  final VoidCallback onTest;
+  final ValueChanged<String>? onSelect;
+  final VoidCallback? onTest;
 
   const _PromptChips({required this.onSelect, required this.onTest});
 
@@ -215,11 +279,12 @@ class _PromptChips extends StatelessWidget {
     '이 건강 정보가 맞나요?',
     '정부지원 대출 문자',
     'SNS 세일 광고가 의심돼요',
-  ]; 
+  ];
 
   @override
   Widget build(BuildContext context) {
     final itemCount = _prompts.length + 1;
+    final enabled = onSelect != null && onTest != null;
     return SizedBox(
       height: 48,
       child: ListView.separated(
@@ -237,14 +302,26 @@ class _PromptChips extends StatelessWidget {
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               label: Text(prompt),
               labelStyle: TextStyle(
-                color: isTest ? AppColors.pointAmber : AppColors.primaryNavy,
+                color: !enabled
+                    ? AppColors.textSecondary
+                    : isTest
+                        ? AppColors.pointAmber
+                        : AppColors.primaryNavy,
                 fontSize: AppSizes.fontNormal,
               ),
               backgroundColor: AppColors.surface,
               side: BorderSide(
-                color: isTest ? AppColors.pointAmber : AppColors.divider,
+                color: !enabled
+                    ? AppColors.divider
+                    : isTest
+                        ? AppColors.pointAmber
+                        : AppColors.divider,
               ),
-              onPressed: isTest ? onTest : () => onSelect(prompt),
+              onPressed: !enabled
+                  ? null
+                  : isTest
+                      ? onTest
+                      : () => onSelect!(prompt),
             ),
           );
         },

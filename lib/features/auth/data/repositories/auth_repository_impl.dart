@@ -3,6 +3,7 @@ import 'package:baroallgi/features/auth/auth_firebase_codes.dart';
 import 'package:baroallgi/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:baroallgi/features/auth/data/datasources/user_add_info_remote_datasource.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository.dart';
+import 'package:baroallgi/features/auth/models/ai_chat_daily_usage.dart';
 import 'package:baroallgi/features/auth/models/auth_model.dart';
 import 'package:baroallgi/features/auth/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -166,6 +167,16 @@ class AuthRepositoryImpl implements AuthRepository {
         authResultMsg: '회원 추가정보 저장에 실패했습니다. 다시 시도해주세요.',
       );
     }
+  }
+
+  @override
+  Future<AiChatDailyQuota> fetchAiChatDailyQuota(String uid) {
+    return _addInfoDataSource.fetchAiChatDailyQuota(uid);
+  }
+
+  @override
+  Future<AiChatDailyQuota> consumeAiChatDailyTurn(String uid) {
+    return _addInfoDataSource.consumeAiChatDailyTurn(uid);
   }
 
   String _signUpAuthErrorMessage(FirebaseAuthException fe) {

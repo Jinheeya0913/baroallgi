@@ -1,4 +1,5 @@
 import 'package:baroallgi/features/auth/egg_hashcode.dart';
+import 'package:baroallgi/features/auth/models/ai_chat_daily_usage.dart';
 import 'package:baroallgi/features/auth/models/user_add_info_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -22,6 +23,56 @@ class UserAddInfoRemoteDataSource {
     final data = snapshot.data();
     if (!snapshot.exists || data == null) return null;
     return UserAddInfoModel.fromFirestore(uid, data);
+  }
+
+  Future<AiChatDailyQuota> fetchAiChatDailyQuota(String uid) async {
+    final addInfo = await fetch(uid);
+    final today = AiChatDailyUsage.seoulDateString();
+    if (addInfo == null) {
+      return AiChatDailyQuota.free(date: today, used: 0);
+    }
+    if (addInfo.isPaidActive) {
+      return AiChatDailyQuota.unlimited(date: today);
+    }
+    final daily = addInfo.aiChatDaily;
+    final used = (daily != null && daily.date == today) ? daily.count : 0;
+    return AiChatDailyQuota.free(date: today, used: used);
+  }
+
+  /// 무료면 오늘 카운트를 1 올리고, 한도면 [AiChatDailyLimitExceededException].
+  /// 유료(유효 구독)면 카운트 없이 unlimited 쿼타를 반환한다.
+  Future<AiChatDailyQuota> consumeAiChatDailyTurn(String uid) async {
+    final userRef = _userDoc(uid);
+    return _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(userRef);
+      final today = AiChatDailyUsage.seoulDateString();
+      final data = snapshot.data();
+      if (!snapshot.exists || data == null) {
+        throw StateError('user addInfo missing');
+      }
+
+      final addInfo = UserAddInfoModel.fromFirestore(uid, data);
+      if (addInfo.isPaidActive) {
+        return AiChatDailyQuota.unlimited(date: today);
+      }
+
+      final daily = addInfo.aiChatDaily;
+      final used = (daily != null && daily.date == today) ? daily.count : 0;
+      if (used >= AiChatDailyUsage.freeDailyLimit) {
+        throw AiChatDailyLimitExceededException(
+          limit: AiChatDailyUsage.freeDailyLimit,
+          date: today,
+        );
+      }
+
+      final next = AiChatDailyUsage(date: today, count: used + 1);
+      transaction.set(
+        userRef,
+        {'aiChatDaily': next.toFirestore()},
+        SetOptions(merge: true),
+      );
+      return AiChatDailyQuota.free(date: today, used: next.count);
+    });
   }
 
   /// 무료 가입 addInfo를 쓰고, egg_hashcode 유니크 인덱스를 함께 만든다.

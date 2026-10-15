@@ -4,6 +4,9 @@ import 'package:baroallgi/features/ai_chat/data/repositories/ai_chat_repository.
 import 'package:baroallgi/features/ai_chat/data/repositories/ai_chat_repository_impl.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_message_model.dart';
 import 'package:baroallgi/features/ai_chat/models/ai_chat_room_model.dart';
+import 'package:baroallgi/features/ai_chat/models/ai_chat_send_result.dart';
+import 'package:baroallgi/features/auth/models/ai_chat_daily_usage.dart';
+import 'package:baroallgi/features/auth/presentation/provider/auth_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,6 +17,38 @@ final aiChatDatasourceProvider = Provider<AiChatRemoteDataSource>((ref) {
 final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
   return AiChatRepositoryImpl(datasource: ref.watch(aiChatDatasourceProvider));
 });
+
+class AiChatDailyQuotaNotifier extends Notifier<AiChatDailyQuota?> {
+  @override
+  AiChatDailyQuota? build() {
+    Future.microtask(refresh);
+    return null;
+  }
+
+  String? get _uid => ref.read(firebaseAuthProvider).currentUser?.uid;
+
+  Future<void> refresh() async {
+    final uid = _uid;
+    if (uid == null) {
+      state = null;
+      return;
+    }
+    try {
+      state = await ref.read(authRepositoryProvider).fetchAiChatDailyQuota(uid);
+    } catch (error) {
+      debugPrint('rlog :: chat daily quota refresh error : $error');
+    }
+  }
+
+  void apply(AiChatDailyQuota quota) {
+    state = quota;
+  }
+}
+
+final aiChatDailyQuotaProvider =
+    NotifierProvider<AiChatDailyQuotaNotifier, AiChatDailyQuota?>(
+  AiChatDailyQuotaNotifier.new,
+);
 
 class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
   @override
@@ -79,13 +114,20 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
     }
   }
 
-  Future<void> sendTest(String roomId) async {
+  Future<AiChatSendResult> sendTest(String roomId) async {
     const testQuestion = '테스트';
     const testAnswer =
         '이건 테스트 응답이에요.\n→ AI를 호출하지 않았고\n→ 화면·저장 흐름만 확인하는 고정 메시지입니다.';
 
     final current = _find(roomId);
-    if (current == null || current.isReplying) return;
+    if (current == null) return AiChatSendResult.busy;
+    if (current.isReplying) return AiChatSendResult.busy;
+
+    final uid = _uid;
+    if (uid == null) return AiChatSendResult.notSignedIn;
+
+    final quotaResult = await _consumeDailyTurn(uid);
+    if (quotaResult != null) return quotaResult;
 
     final now = DateTime.now();
     final userMessage = AiChatMessageModel(
@@ -103,13 +145,10 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
     );
     _replace(asked);
 
-    final uid = _uid;
-    if (uid != null) {
-      try {
-        await _persistUserTurn(uid, asked, userMessage);
-      } catch (error) {
-        debugPrint('rlog :: chat save test user turn error : $error');
-      }
+    try {
+      await _persistUserTurn(uid, asked, userMessage);
+    } catch (error) {
+      debugPrint('rlog :: chat save test user turn error : $error');
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 400));
@@ -122,31 +161,55 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
       createdAt: answeredAt,
     );
     final latest = _find(roomId);
-    if (latest == null) return;
+    if (latest == null) return AiChatSendResult.sent;
     final answered = latest.copyWith(
       title: latest.title ?? '테스트',
       updatedAt: answeredAt,
       lastMessageText: testAnswer,
       isReplying: false,
-      isPersisted: uid != null,
+      isPersisted: true,
       messages: [...latest.messages, assistantMessage],
     );
     _replace(answered);
 
-    if (uid == null) return;
     try {
       await _persistAssistantTurn(uid, answered, assistantMessage);
     } catch (error) {
       debugPrint('rlog :: chat save test assistant turn error : $error');
     }
+    return AiChatSendResult.sent;
   }
 
-  Future<void> send(String roomId, String text) async {
+  Future<AiChatSendResult> send(String roomId, String text) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty) return;
+    if (trimmed.isEmpty) return AiChatSendResult.empty;
 
     final current = _find(roomId);
-    if (current == null || current.isReplying) return;
+    if (current == null) return AiChatSendResult.busy;
+    if (current.isReplying) return AiChatSendResult.busy;
+
+    final uid = _uid;
+    if (uid == null) {
+      final now = DateTime.now();
+      _replace(
+        current.copyWith(
+          isReplying: false,
+          messages: [
+            ...current.messages,
+            AiChatMessageModel(
+              id: '${now.microsecondsSinceEpoch}_err',
+              role: AiChatRole.assistant,
+              text: '대화를 저장하려면 로그인해 주세요.',
+              createdAt: now,
+            ),
+          ],
+        ),
+      );
+      return AiChatSendResult.notSignedIn;
+    }
+
+    final quotaResult = await _consumeDailyTurn(uid);
+    if (quotaResult != null) return quotaResult;
 
     final now = DateTime.now();
     final userMessage = AiChatMessageModel(
@@ -163,25 +226,6 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
       messages: [...current.messages, userMessage],
     );
     _replace(asked);
-
-    final uid = _uid;
-    if (uid == null) {
-      _replace(
-        asked.copyWith(
-          isReplying: false,
-          messages: [
-            ...asked.messages,
-            AiChatMessageModel(
-              id: '${now.microsecondsSinceEpoch}_err',
-              role: AiChatRole.assistant,
-              text: '대화를 저장하려면 로그인해 주세요.',
-              createdAt: DateTime.now(),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
 
     try {
       await _persistUserTurn(uid, asked, userMessage);
@@ -212,7 +256,7 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
       }
 
       final latest = _find(roomId);
-      if (latest == null) return;
+      if (latest == null) return AiChatSendResult.sent;
       final answered = latest.copyWith(
         title: title,
         updatedAt: answeredAt,
@@ -223,10 +267,11 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
       );
       _replace(answered);
       await _persistAssistantTurn(uid, answered, assistantMessage);
+      return AiChatSendResult.sent;
     } catch (error) {
       debugPrint('rlog :: chat reply error : $error');
       final latest = _find(roomId);
-      if (latest == null) return;
+      if (latest == null) return AiChatSendResult.sent;
       final failed = latest.copyWith(
         updatedAt: DateTime.now(),
         isReplying: false,
@@ -241,6 +286,23 @@ class AiChatRoomsNotifier extends Notifier<List<AiChatRoomModel>> {
         ],
       );
       _replace(failed);
+      return AiChatSendResult.sent;
+    }
+  }
+
+  /// 성공 시 null, 한도/오류 시 결과 코드.
+  Future<AiChatSendResult?> _consumeDailyTurn(String uid) async {
+    try {
+      final quota =
+          await ref.read(authRepositoryProvider).consumeAiChatDailyTurn(uid);
+      ref.read(aiChatDailyQuotaProvider.notifier).apply(quota);
+      return null;
+    } on AiChatDailyLimitExceededException {
+      await ref.read(aiChatDailyQuotaProvider.notifier).refresh();
+      return AiChatSendResult.dailyLimitExceeded;
+    } catch (error) {
+      debugPrint('rlog :: chat daily quota consume error : $error');
+      return AiChatSendResult.quotaCheckFailed;
     }
   }
 
