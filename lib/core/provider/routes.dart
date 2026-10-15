@@ -17,6 +17,11 @@ List<GoRoute> _routes = [
     builder: (context, state) => const SingUpPage(),
   ),
   GoRoute(
+    path: '/profile_edit',
+    name: 'profile_edit',
+    builder: (context, state) => const ProfileEditPage(),
+  ),
+  GoRoute(
     path: '/main',
     name: 'main',
     builder: (context, state) => const HomePage(),

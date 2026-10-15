@@ -41,7 +41,7 @@ class AuthNotifier extends StateNotifier<AuthModel?> {
     final autoLogin = await _storage.read(key: 'useAutoLogin');
 
     if (autoLogin == 'true') {
-      state = _authRepository.currentUser();
+      state = await _authRepository.loadCurrentUser();
     }
   }
 

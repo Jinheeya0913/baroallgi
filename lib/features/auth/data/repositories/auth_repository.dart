@@ -10,4 +10,7 @@ abstract class AuthRepository {
   });
 
   AuthModel? currentUser();
+
+  /// Auth 세션 + Firestore addInfo를 함께 읽는다. 자동 로그인용.
+  Future<AuthModel?> loadCurrentUser();
 }
