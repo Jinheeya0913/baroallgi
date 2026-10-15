@@ -20,6 +20,7 @@ class RouteTestPage extends StatelessWidget {
             _sectionTitle('Standard Routes'),
             _buildPushCard(context, 'Splash', '/splash', Icons.auto_awesome),
             _buildPushCard(context, 'Login', '/login', Icons.login),
+            _buildPushCard(context, 'Sign Up', '/signup', Icons.person_add),
             _buildPushCard(context, 'Main Home', '/main', Icons.home),
             _buildPushCard(
               context,

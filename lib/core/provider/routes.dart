@@ -12,6 +12,11 @@ List<GoRoute> _routes = [
     builder: (context, state) => const LoginPage(),
   ),
   GoRoute(
+    path: '/signup',
+    name: 'signup',
+    builder: (context, state) => const SingUpPage(),
+  ),
+  GoRoute(
     path: '/main',
     name: 'main',
     builder: (context, state) => const HomePage(),
