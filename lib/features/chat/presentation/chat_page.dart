@@ -5,6 +5,7 @@ import 'package:baroallgi/core/ui/widgets/base_text_field.dart';
 import 'package:baroallgi/features/chat/models/chat_message_model.dart';
 import 'package:baroallgi/features/chat/provider/chat_rooms_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
@@ -31,6 +32,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       if (next == _canSend) return;
       setState(() => _canSend = next);
     });
+    Future.microtask(() {
+      ref.read(chatRoomsProvider.notifier).openRoom(widget.roomId);
+    });
   }
 
   @override
@@ -49,6 +53,46 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     ref.read(chatRoomsProvider.notifier).send(widget.roomId, text ?? _controller.text);
     if (text != null) return;
     _controller.clear();
+  }
+
+  void _sendTest() {
+    final room = ref.read(chatRoomsProvider).where((item) {
+      return item.id == widget.roomId;
+    }).firstOrNull;
+    if (room == null || room.isReplying) return;
+    ref.read(chatRoomsProvider.notifier).sendTest(widget.roomId);
+  }
+
+  Future<void> _copyAllMessages() async {
+    final room = ref.read(chatRoomsProvider).where((item) {
+      return item.id == widget.roomId;
+    }).firstOrNull;
+    if (room == null || room.messages.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('복사할 메시지가 없어요'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
+
+    final body = room.messages
+        .map((message) {
+          final speaker = message.role == ChatRole.user ? '나' : '바로알기';
+          return '$speaker: ${message.text}';
+        })
+        .join('\n\n');
+
+    await Clipboard.setData(ClipboardData(text: body));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('대화 전체를 복사했어요'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   @override
@@ -86,10 +130,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       title: Text(room.title ?? '새 대화'),
       useBackBtn: true,
       padding: EdgeInsets.zero,
+      actions: [
+        IconButton(
+          onPressed: _copyAllMessages,
+          tooltip: '공유하기',
+          color: AppColors.primaryNavy,
+          icon: const Icon(Icons.ios_share_rounded),
+        ),
+      ],
       child: Column(
         children: [
           const _PreviewBanner(),
-          _PromptChips(onSelect: _send),
+          _PromptChips(onSelect: _send, onTest: _sendTest),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -114,16 +166,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 }
 
-const _introMessage = ChatMessageModel(
+final _introMessage = ChatMessageModel(
   id: 'intro',
   role: ChatRole.assistant,
   text: '어떤 내용이 궁금한가요? 소식, 광고, 문자 내용을 적어 주시면 함께 살펴볼게요.',
+  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
 );
 
-const _pendingMessage = ChatMessageModel(
+final _pendingMessage = ChatMessageModel(
   id: 'pending',
   role: ChatRole.assistant,
   text: '확인하고 있어요',
+  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
 );
 
 class _PreviewBanner extends StatelessWidget {
@@ -152,40 +206,45 @@ class _PreviewBanner extends StatelessWidget {
 
 class _PromptChips extends StatelessWidget {
   final ValueChanged<String> onSelect;
+  final VoidCallback onTest;
 
-  const _PromptChips({required this.onSelect});
+  const _PromptChips({required this.onSelect, required this.onTest});
 
   static const _prompts = [
     '부고 문자 링크가 왔어요',
     '이 건강 정보가 맞나요?',
     '정부지원 대출 문자',
     'SNS 세일 광고가 의심돼요',
-  ];
+  ]; 
 
   @override
   Widget build(BuildContext context) {
+    final itemCount = _prompts.length + 1;
     return SizedBox(
       height: 48,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.normal),
-        itemCount: _prompts.length,
+        itemCount: itemCount,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final prompt = _prompts[index];
+          final isTest = index == _prompts.length;
+          final prompt = isTest ? '테스트' : _prompts[index];
           return Align(
             alignment: Alignment.center,
             child: ActionChip(
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               label: Text(prompt),
-              labelStyle: const TextStyle(
-                color: AppColors.primaryNavy,
+              labelStyle: TextStyle(
+                color: isTest ? AppColors.pointAmber : AppColors.primaryNavy,
                 fontSize: AppSizes.fontNormal,
               ),
               backgroundColor: AppColors.surface,
-              side: const BorderSide(color: AppColors.divider),
-              onPressed: () => onSelect(prompt),
+              side: BorderSide(
+                color: isTest ? AppColors.pointAmber : AppColors.divider,
+              ),
+              onPressed: isTest ? onTest : () => onSelect(prompt),
             ),
           );
         },
@@ -202,6 +261,7 @@ class _ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.role == ChatRole.user;
+    final showCopy = !isUser && message.id != 'pending';
     final maxWidth = MediaQuery.sizeOf(context).width * 0.72;
 
     final bubble = ConstrainedBox(
@@ -254,7 +314,39 @@ class _ChatBubble extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
-          Flexible(child: bubble),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                bubble,
+                if (showCopy)
+                  IconButton(
+                    onPressed: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: message.text),
+                      );
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('메시지를 복사했어요'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
+                    iconSize: 16,
+                    color: AppColors.textSecondary,
+                    icon: const Icon(Icons.copy_rounded),
+                    tooltip: '복사',
+                  ),
+              ],
+            ),
+          ),
         ],
       ),
     );

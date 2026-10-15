@@ -38,9 +38,13 @@ class ChatListPage extends ConsumerWidget {
               ),
               itemBuilder: (context, index) {
                 final room = rooms[index];
-                return _RoomTile(
-                  room: room,
-                  onTap: () => context.push('/chat/room/${room.id}'),
+                return _SwipeDeleteTile(
+                  key: ValueKey(room.id),
+                  onDelete: () => _deleteRoom(context, ref, room.id),
+                  child: _RoomTile(
+                    room: room,
+                    onTap: () => context.push('/chat/room/${room.id}'),
+                  ),
                 );
               },
             ),
@@ -50,6 +54,21 @@ class ChatListPage extends ConsumerWidget {
   void _openNewRoom(BuildContext context, WidgetRef ref) {
     final id = ref.read(chatRoomsProvider.notifier).create();
     context.push('/chat/room/$id');
+  }
+
+  Future<void> _deleteRoom(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+  ) async {
+    try {
+      await ref.read(chatRoomsProvider.notifier).delete(roomId);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('대화를 삭제하지 못했어요.')),
+      );
+    }
   }
 }
 
@@ -95,6 +114,132 @@ class _EmptyRooms extends StatelessWidget {
   }
 }
 
+class _SwipeDeleteTile extends StatefulWidget {
+  final Future<void> Function() onDelete;
+  final Widget child;
+
+  const _SwipeDeleteTile({
+    super.key,
+    required this.onDelete,
+    required this.child,
+  });
+
+  @override
+  State<_SwipeDeleteTile> createState() => _SwipeDeleteTileState();
+}
+
+class _SwipeDeleteTileState extends State<_SwipeDeleteTile>
+    with SingleTickerProviderStateMixin {
+  static const _actionWidth = 88.0;
+
+  late final AnimationController _controller;
+  bool _deleting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 180),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    _controller.stop();
+    final next = _controller.value - details.delta.dx / _actionWidth;
+    _controller.value = next.clamp(0.0, 1.0);
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    final velocity = details.primaryVelocity ?? 0;
+    final open = velocity < -400 || (velocity < 400 && _controller.value > 0.4);
+    _controller.animateTo(open ? 1 : 0);
+  }
+
+  Future<void> _delete() async {
+    if (_deleting) return;
+    setState(() => _deleting = true);
+    await widget.onDelete();
+    if (!mounted) return;
+    setState(() => _deleting = false);
+    _controller.animateTo(0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  width: _actionWidth,
+                  child: Material(
+                    color: AppColors.alertRed,
+                    child: InkWell(
+                      onTap: _deleting ? null : _delete,
+                      child: _deleting
+                          ? const Center(
+                              child: SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.surface,
+                                ),
+                              ),
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.surface,
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  '삭제',
+                                  style: TextStyle(
+                                    color: AppColors.surface,
+                                    fontSize: AppSizes.fontNormal,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onHorizontalDragUpdate: _onDragUpdate,
+              onHorizontalDragEnd: _onDragEnd,
+              child: Transform.translate(
+                offset: Offset(-_actionWidth * _controller.value, 0),
+                child: child,
+              ),
+            ),
+          ],
+        );
+      },
+      child: ColoredBox(
+        color: AppColors.surface,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
 class _RoomTile extends StatelessWidget {
   final ChatRoomModel room;
   final VoidCallback onTap;
@@ -103,9 +248,11 @@ class _RoomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final preview = room.messages.isEmpty
-        ? '아직 메시지가 없어요'
-        : room.messages.last.text;
+    final preview = room.lastMessageText?.trim().isNotEmpty == true
+        ? room.lastMessageText!
+        : room.messages.isEmpty
+            ? '아직 메시지가 없어요'
+            : room.messages.last.text;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
