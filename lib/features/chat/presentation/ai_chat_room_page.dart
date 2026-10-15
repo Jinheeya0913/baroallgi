@@ -8,18 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ChatPage extends ConsumerStatefulWidget {
-  static String get routeName => 'chat_room';
+class AiChatRoomPage extends ConsumerStatefulWidget {
+  static String get routeName => 'ai_chat_room';
 
   final String roomId;
 
-  const ChatPage({super.key, required this.roomId});
+  const AiChatRoomPage({super.key, required this.roomId});
 
   @override
-  ConsumerState<ChatPage> createState() => _ChatPageState();
+  ConsumerState<AiChatRoomPage> createState() => _AiChatRoomPageState();
 }
 
-class _ChatPageState extends ConsumerState<ChatPage> {
+class _AiChatRoomPageState extends ConsumerState<AiChatRoomPage> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   var _canSend = false;
