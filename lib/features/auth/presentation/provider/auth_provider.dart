@@ -1,5 +1,6 @@
 import 'package:baroallgi/core/provider/firebase_provider.dart';
 import 'package:baroallgi/core/provider/storage_provider.dart';
+import 'package:baroallgi/features/auth/data/datasources/user_add_info_remote_datasource.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository.dart';
 import 'package:baroallgi/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:baroallgi/features/auth/models/auth_model.dart';
@@ -15,20 +16,27 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthModel?>((
   );
 });
 
+final userAddInfoDataSourceProvider = Provider<UserAddInfoRemoteDataSource>((
+  ref,
+) {
+  return UserAddInfoRemoteDataSource(ref.watch(firestoreProvider));
+});
+
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepositoryImpl(ref.watch(authDataSourceProvider));
+  return AuthRepositoryImpl(
+    ref.watch(authDataSourceProvider),
+    ref.watch(userAddInfoDataSourceProvider),
+  );
 });
 
 class AuthNotifier extends StateNotifier<AuthModel?> {
   final AuthRepository _authRepository;
   final FlutterSecureStorage _storage;
 
-  AuthNotifier(this._authRepository, this._storage)
-    : super(null) {
+  AuthNotifier(this._authRepository, this._storage) : super(null) {
     _checkAutoLogin();
-  } // 초기값 : 로그아웃 상태
+  }
 
-  ///  자동 로그인 체크
   Future<void> _checkAutoLogin() async {
     final autoLogin = await _storage.read(key: 'useAutoLogin');
 
@@ -37,33 +45,44 @@ class AuthNotifier extends StateNotifier<AuthModel?> {
     }
   }
 
-  /// 로그인
-  Future<void> signIn({required String email, required String password}) async {
+  Future<AuthModel> signIn({
+    required String email,
+    required String password,
+  }) async {
     final result = await _authRepository.signIn(email, password);
-    state = result;
+    // 미인증·실패는 로그인 상태로 두지 않는다.
+    state = result.authResultCode == '00' ? result : null;
+    return result;
   }
 
-
-  /// 회원가입
-  Future<void> signUp({required String email, required String password}) async {
+  Future<AuthModel> signUp({
+    required String email,
+    required String password,
+    required String nickname,
+  }) async {
     try {
-      // 1. Repository의 signUp 호출
-      final result = await _authRepository.signUp(email, password);
-
-      // 2. 결과 상태 반영 (성공 시 유저 정보가 state에 담김)
-      state = result;
+      final result = await _authRepository.signUp(
+        email: email,
+        password: password,
+        nickname: nickname,
+      );
+      // 가입 후 인증 메일·signOut까지 끝나면 로그인 상태가 아니다.
+      state = result.authResultCode == '00' ? null : result;
+      return result;
     } catch (e) {
-      state = AuthModel(
+      final failed = AuthModel(
         authResultCode: '99',
         authResultMsg: '회원가입 중 오류가 발생했습니다: $e',
       );
+      state = failed;
+      return failed;
     }
   }
 
   AuthModel? logout(AuthModel auth) {
     state = null;
     _storage.delete(key: 'useAutoLogin');
-    
+
     print('rlog :: 로그아웃 성공');
     return state;
   }

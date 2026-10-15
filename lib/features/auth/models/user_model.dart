@@ -51,7 +51,7 @@ class UserModel {
     bool? emailVerified,
     DateTime? createdAt,
     DateTime? lastLoginAt,
-  }) {
+    }) {
     return UserModel(
       uid: uid ?? this.uid,
       email: email ?? this.email,

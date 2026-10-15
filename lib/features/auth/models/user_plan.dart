@@ -1,0 +1,1 @@
+enum UserPlan { free, paid }

@@ -153,6 +153,29 @@ class LoginPage extends HookConsumerWidget {
                         children: [
                           Expanded(
                             child: ElevatedButton(
+                              onPressed: () {
+                                _login(
+                                  ref: ref,
+                                  context: context,
+                                  userEmail: 'taran0913@naver.com',
+                                  userPw: 'wlsgmlHan1!',
+                                );
+                              },
+                              child: Text(
+                                '테스트 로그인',
+                                style: TextStyle(
+                                  fontSize: AppSizes.s20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
                               onPressed: () => {},
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.yellow,
@@ -178,6 +201,7 @@ class LoginPage extends HookConsumerWidget {
                                   context: context,
                                   userEmail: userEmailController.text,
                                   pw: userPwController.text,
+                                  nickname: '테스트유저',
                                 );
                               },
                               style: ElevatedButton.styleFrom(
@@ -227,22 +251,24 @@ class LoginPage extends HookConsumerWidget {
       return;
     }
 
-    await ref.read(authNotifierProvider.notifier).signIn(email: userEmail, password: userPw);
+    final result = await ref
+        .read(authNotifierProvider.notifier)
+        .signIn(email: userEmail, password: userPw);
 
-    final result = ref.read(authNotifierProvider);
+    if (!context.mounted) return;
 
-    if(result != null){
-      if(result.resultCode != '00') {
-        ScaffoldMessenger.of(context).showSnackBar(
-            BaseSnackBar(content: Text('${result.resultMsg}')));
-      } else {
-        ref.read(secureStorageProvider).write(key: 'useAutoLogin', value: 'true');
-      }
+    if (result.resultCode == '00') {
+      ref.read(secureStorageProvider).write(key: 'useAutoLogin', value: 'true');
     } else {
-      // 로그인 실패
-      ScaffoldMessenger.of(context).showSnackBar(BaseSnackBar(content: Text('로그인 실패')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        BaseSnackBar(
+          content: Text(
+            result.resultMsg ?? '로그인 실패',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     }
-
   }
 
   void _signUp({
@@ -250,19 +276,18 @@ class LoginPage extends HookConsumerWidget {
     required BuildContext context,
     required String userEmail,
     required String pw,
+    required String nickname,
   }) async {
-    await ref
-        .read(authNotifierProvider.notifier)
-        .signUp(email: userEmail, password: pw);
+    final result = await ref.read(authNotifierProvider.notifier).signUp(
+          email: userEmail,
+          password: pw,
+          nickname: nickname,
+        );
 
-    final result = ref.read(authNotifierProvider);
-
-    if (result != null && result.resultCode == '00') {
-      print('rlog :: 회원가입 성공');
+    if (result.resultCode == '00') {
+      print('rlog :: 회원가입 성공 -> ${result.resultMsg}');
     } else {
-      print('rlog :: 회원가입 실패 -> ${result?.resultMsg}');
+      print('rlog :: 회원가입 실패 -> ${result.resultMsg}');
     }
-
-
   }
 }
